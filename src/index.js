@@ -9,6 +9,10 @@ const fd = Scene.root
   .child('Focal Distance')
 const planeTracker = Scene.root.child('planeTracker0')
 const TouchGestures = require('TouchGestures')
+const blockButton = Scene.root.child('Device').child('Camera').child('blockButton');
+const gravityButton = Scene.root.child('Device').child('Camera').child('gravityButton');
+const resetButton = Scene.root.child('Device').child('Camera').child('resetButton');
+
 // cannon is still needed as a direct import because I need at add CANNON as a static property on the module
 import CANNON from 'cannon'
 import CannonHelper from 'spark-ar-physics'
@@ -29,6 +33,9 @@ var block9 = planeTracker.child('Block9')
 var block10 = planeTracker.child('Block10')
 
 var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10]
+var blockIndex = 0;
+var blockPos = [];
+
 
 var worldObjects = [];
 var floor;
@@ -39,8 +46,10 @@ var cannonHelper;
 var loopTimeMs = 30;
 var lastTime;
 
+var updateTimer;
 
-function initBlockPos() {
+
+/*function initBlockPos() {
     var initialX = 0;
     var initialY = 10;
     var initialZ = -70;
@@ -49,7 +58,7 @@ function initBlockPos() {
         positions.push(new CANNON.Vec3(initialX + 100*i, initialY+100, initialZ));
     }
     return positions;
-}
+}*/
 function initBlock(pos) {
     var blockLength = 25;
     var blockBody = new CANNON.Body({
@@ -60,6 +69,24 @@ function initBlock(pos) {
 
   return blockBody;
 }
+function makeBlock(){
+    if(blockIndex < 10){
+        var sceneBlock = blocks[blockIndex];
+        var pos = new CANNON.Vec3( 50*blockIndex, 100, 0);
+        blockPos.push(pos)
+        var cannonBlock = initBlock(new CANNON.Vec3(pos.x,pos.y,pos.z));
+        worldObjects.push({sceneObject: sceneBlock, physicsObject: cannonBlock});
+        //Diagnostics.log(worldObjects[0])
+        sceneBlock.hidden = false;
+        blockIndex++;
+        gravity = true;
+        //increment counter
+        //make scene block into block block
+        //make visible
+        cannonHelper = new CannonHelper(worldObjects);
+
+    }
+}
 
 
 function initWorld(){
@@ -69,52 +96,91 @@ function initWorld(){
     floor = CannonHelper.makeFloor();
 
     worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
-
-    var blockPos = initBlockPos();
-
-    // create a new worldObject for each pin
-    blocks.forEach((block, i) => {
-      worldObjects.push({ sceneObject: block, physicsObject: initBlock(blockPos[i]) })
-    });
-
-    // init the cannon world
+    blockIndex = 0;
+    for (var b in blocks){
+        blocks[b].hidden = true;
+    }
     cannonHelper = new CannonHelper(worldObjects);
 }
 
+function resetBlockPos(){
+    gravitySignal = false;
+    gravity = true;
+
+    Diagnostics.log(worldObjects)
+    for(var i = 1; i < worldObjects.length; i++){
+        worldObjects[i].physicsObject = initBlock(blockPos[i-1])
+    }
+
+    cannonHelper = new CannonHelper(worldObjects)
+}
+
+
+
 initWorld();
 
-// couldn't really think of a better way so an interval it is...
-Time.ms.interval(loopTimeMs).subscribe(function(elapsedTime) {
-  if (lastTime !== undefined) {
-      var deltaTime = (elapsedTime - lastTime) / 1000
+    /*updateTimer = Time.setInterval(function(){
+        if (lastTime !== undefined) {
+            //var deltaTime = (elapsedTime - lastTime) / 1000
+            var deltaTime = loopTimeMs;
 
-      if(gravity){
-          cannonHelper.update(deltaTime)
-      }
-      gravity = gravitySignal;
+            if(gravity){
+                //Diagnostics.log("yuh")
+                helper.update(deltaTime)
+            }
 
-
-  }
-
-  lastTime = elapsedTime
-})
+            gravity = gravitySignal;
 
 
+        }
 
-TouchGestures.onTap().subscribe(function(e) {
-  // convert the x of the tap to an x for force later
-  //const xDirection = rangeMap(e.location.x, 0, 750, -50, 50)
+        //lastTime = elapsedTime
+    },loopTimeMs)*/
 
-  //throwBall(xDirection)
+
+TouchGestures.onTap(blockButton).subscribe(function (gesture) {
+    if(!gravitySignal)
+        makeBlock();
+});
+
+TouchGestures.onTap(gravityButton).subscribe(function(e) {
     if(!gravitySignal){
         gravitySignal = true;
     }
     else {
-        initWorld();
+        resetBlockPos();
     }
 
-
 })
+TouchGestures.onTap(resetButton).subscribe(function(e){
+    if(!gravitySignal)
+        initWorld();
+})
+
+
+
+
+Time.ms.interval(loopTimeMs).subscribe(function(elapsedTime) {
+    if (lastTime !== undefined) {
+        var deltaTime = (elapsedTime - lastTime) / 1000
+
+
+        if(gravity){
+            cannonHelper.update(deltaTime)
+        }
+
+        gravity = gravitySignal;
+
+
+    }
+
+    lastTime = elapsedTime
+})
+// couldn't really think of a better way so an interval it is...
+
+
+
+
 
 /*
 function resetGame() {
