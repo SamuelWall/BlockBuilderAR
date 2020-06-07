@@ -3,21 +3,28 @@ const Instruction = require('Instruction')
 const CameraInfo = require('CameraInfo')
 const Scene = require('Scene')
 const Time = require('Time')
+const Materials = require('Materials');
+const Reactive = require('Reactive');
+const TouchGestures = require('TouchGestures')
+const DeviceMotion = require('DeviceMotion');
+const Patches = require('Patches');
+
+
+const root = Scene.root;
 const fd = Scene.root
   .child('Device')
   .child('Camera')
   .child('Focal Distance')
-const planeTracker = Scene.root.child('planeTracker0')
-const TouchGestures = require('TouchGestures')
-const blockButton = Scene.root.child('Device').child('Camera').child('blockButton');
-const gravityButton = Scene.root.child('Device').child('Camera').child('gravityButton');
-const resetButton = Scene.root.child('Device').child('Camera').child('resetButton');
+const blockButton = root.child('Device').child('Camera').child('blockButton');
+const gravityButton = root.child('Device').child('Camera').child('gravityButton');
+const resetButton = root.child('Device').child('Camera').child('resetButton');
+const planeTracker = root.child('planeTracker0')
+const camera = root.child('Device').child('Camera');
 
-// cannon is still needed as a direct import because I need at add CANNON as a static property on the module
+
+
 import CANNON from 'cannon'
 import CannonHelper from 'spark-ar-physics'
-
-// show switch camera instructions on front camera
 Instruction.bind(CameraInfo.captureDevicePosition.eq(CameraInfo.CameraPosition.FRONT), 'flip_camera')
 
 var floorPlane = planeTracker.child('plane0')
@@ -33,9 +40,10 @@ var block9 = planeTracker.child('Block9')
 var block10 = planeTracker.child('Block10')
 
 var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10]
-var blockIndex = 0;
+var newestIndex = 0;
 var blockPos = [];
 
+var numBlock = 0;
 
 var worldObjects = [];
 var floor;
@@ -64,21 +72,21 @@ function initBlock(pos) {
     var blockBody = new CANNON.Body({
         mass: 0.2,
         position: pos,
-        shape: new CANNON.Box(new CANNON.Vec3(blockLength/2, blockLength/2, blockLength/2))
+        shape: new CANNON.Box(new CANNON.Vec3(blockLength/4, blockLength/4, blockLength/4))
     })
 
   return blockBody;
 }
 function makeBlock(){
-    if(blockIndex < 10){
-        var sceneBlock = blocks[blockIndex];
-        var pos = new CANNON.Vec3( 50*blockIndex, 100, 0);
+    if(newestIndex < 10){
+        var sceneBlock = blocks[newestIndex];
+        var pos = new CANNON.Vec3( 50*newestIndex - 50*5, 25, 0);
         blockPos.push(pos)
         var cannonBlock = initBlock(new CANNON.Vec3(pos.x,pos.y,pos.z));
         worldObjects.push({sceneObject: sceneBlock, physicsObject: cannonBlock});
         //Diagnostics.log(worldObjects[0])
         sceneBlock.hidden = false;
-        blockIndex++;
+        newestIndex++;
         gravity = true;
         //increment counter
         //make scene block into block block
@@ -96,7 +104,7 @@ function initWorld(){
     floor = CannonHelper.makeFloor();
 
     worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
-    blockIndex = 0;
+    newestIndex = 0;
     for (var b in blocks){
         blocks[b].hidden = true;
     }
@@ -119,23 +127,6 @@ function resetBlockPos(){
 
 initWorld();
 
-    /*updateTimer = Time.setInterval(function(){
-        if (lastTime !== undefined) {
-            //var deltaTime = (elapsedTime - lastTime) / 1000
-            var deltaTime = loopTimeMs;
-
-            if(gravity){
-                //Diagnostics.log("yuh")
-                helper.update(deltaTime)
-            }
-
-            gravity = gravitySignal;
-
-
-        }
-
-        //lastTime = elapsedTime
-    },loopTimeMs)*/
 
 
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
@@ -153,9 +144,85 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
 
 })
 TouchGestures.onTap(resetButton).subscribe(function(e){
-    if(!gravitySignal)
+    //if(!gravitySignal)
         initWorld();
 })
+
+
+function changeMat(block, bid){
+  Promise.all([
+    Materials.findFirst('Cube_mat'),
+    Materials.findFirst('SelectedBlock_mat'),
+  ]).then(function(results){
+      Diagnostics.log("NUMBLOCK: "+numBlock);
+      Diagnostics.log("BID: "+bid)
+      Diagnostics.log(" ")
+    if(numBlock == bid){
+      numBlock = 0;
+      block.material = results[0];
+      Patches.setScalarValue('numBlock', numBlock)
+    }
+    else if (numBlock == 0){//<--else {
+      numBlock = bid;
+      block.material = results[1];
+      Patches.setScalarValue('numBlock', numBlock)
+    }
+  })
+}
+/*for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++){
+    var block = blocks[blockIndex]
+    TouchGestures.onTap(block).subscribe(function (gesture) {
+        //if(!block.hidden){
+
+            Diagnostics.log("BLOCKINDEX: " + blockIndex)
+            changeMat(block.child('Cube'), blockIndex+1);
+        //}
+    });
+}*/
+TouchGestures.onTap(blocks[0]).subscribe(function (gesture) {
+    //if(!block.hidden){
+
+        Diagnostics.log("BLOCKINDEX: " + 0)
+        changeMat(blocks[0].child('Cube'), 0+1);
+    //}
+});
+TouchGestures.onTap(blocks[1]).subscribe(function (gesture) {
+    //if(!block.hidden){
+
+        Diagnostics.log("BLOCKINDEX: " + 1)
+        changeMat(blocks[1].child('Cube'), 1+1);
+    //}
+});
+
+function moveBlock(bid){
+  for(var i = 0; i < blocks.length; i++){
+    if(i == bid){
+      var block = blocks[i];
+      const blockTransform = block.transform;
+
+      var touchPos = Patches.getVectorValue('patchPosition'+(i+1));
+      // Get the angle of the camera
+      const DeviceMotion = require('DeviceMotion');
+      const deviceWorldTransform = DeviceMotion.worldTransform;
+      var yRot = deviceWorldTransform.rotationY;
+
+      var NewXPos = Reactive.mul(Reactive.cos(yRot),touchPos.x)
+      var NewYPos = Reactive.mul(touchPos.y,-1)
+      var NewZPos = Reactive.mul(Reactive.mul(Reactive.sin(yRot),touchPos.x),-1)
+
+      blockTransform.x = NewXPos;
+      blockTransform.y = NewYPos;
+      blockTransform.z = NewZPos;
+
+      //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
+    }
+  }
+}
+TouchGestures.onPan().subscribe(function (gesture) {
+  Diagnostics.log("BIGGGGG")
+
+  moveBlock(numBlock- 1);
+});
 
 
 
@@ -176,11 +243,6 @@ Time.ms.interval(loopTimeMs).subscribe(function(elapsedTime) {
 
     lastTime = elapsedTime
 })
-// couldn't really think of a better way so an interval it is...
-
-
-
-
 
 /*
 function resetGame() {
