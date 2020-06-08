@@ -10,6 +10,7 @@ const DeviceMotion = require('DeviceMotion');
 const Patches = require('Patches');
 
 
+
 const root = Scene.root;
 const fd = Scene.root
   .child('Device')
@@ -42,6 +43,8 @@ var block10 = planeTracker.child('Block10')
 var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10]
 var newestIndex = 0;
 var blockPos = [];
+
+//var touchPos = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
 
 var numBlock = 0;
 
@@ -82,6 +85,10 @@ function makeBlock(){
         var sceneBlock = blocks[newestIndex];
         var pos = new CANNON.Vec3( 50*newestIndex - 50*5, 25, 0);
         blockPos.push(pos)
+
+        //if(newestIndex == 0)
+        //    touchPos = Reactive.vector(Reactive.val(50*newestIndex - 50*5),Reactive.val(25),Reactive.val(0))
+
         var cannonBlock = initBlock(new CANNON.Vec3(pos.x,pos.y,pos.z));
         worldObjects.push({sceneObject: sceneBlock, physicsObject: cannonBlock});
         //Diagnostics.log(worldObjects[0])
@@ -154,9 +161,6 @@ function changeMat(block, bid){
     Materials.findFirst('Cube_mat'),
     Materials.findFirst('SelectedBlock_mat'),
   ]).then(function(results){
-      Diagnostics.log("NUMBLOCK: "+numBlock);
-      Diagnostics.log("BID: "+bid)
-      Diagnostics.log(" ")
     if(numBlock == bid){
       numBlock = 0;
       block.material = results[0];
@@ -182,15 +186,52 @@ function changeMat(block, bid){
 TouchGestures.onTap(blocks[0]).subscribe(function (gesture) {
     //if(!block.hidden){
 
-        Diagnostics.log("BLOCKINDEX: " + 0)
-        changeMat(blocks[0].child('Cube'), 0+1);
+        changeMat(blocks[0].child('Cube'), 1);
     //}
 });
 TouchGestures.onTap(blocks[1]).subscribe(function (gesture) {
     //if(!block.hidden){
-
-        Diagnostics.log("BLOCKINDEX: " + 1)
-        changeMat(blocks[1].child('Cube'), 1+1);
+        changeMat(blocks[1].child('Cube'), 2);
+    //}
+});
+TouchGestures.onTap(blocks[2]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[2].child('Cube'), 3);
+    //}
+});
+TouchGestures.onTap(blocks[3]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[3].child('Cube'), 4);
+    //}
+});
+TouchGestures.onTap(blocks[4]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[4].child('Cube'), 5);
+    //}
+});
+TouchGestures.onTap(blocks[5]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[5].child('Cube'), 6);
+    //}
+});
+TouchGestures.onTap(blocks[6]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[6].child('Cube'), 7);
+    //}
+});
+TouchGestures.onTap(blocks[7]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[7].child('Cube'), 8);
+    //}
+});
+TouchGestures.onTap(blocks[8]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[8].child('Cube'), 9);
+    //}
+});
+TouchGestures.onTap(blocks[9]).subscribe(function (gesture) {
+    //if(!block.hidden){
+        changeMat(blocks[9].child('Cube'), 10);
     //}
 });
 
@@ -201,14 +242,25 @@ function moveBlock(bid){
       const blockTransform = block.transform;
 
       var touchPos = Patches.getVectorValue('patchPosition'+(i+1));
+
+
       // Get the angle of the camera
-      const DeviceMotion = require('DeviceMotion');
+      //const DeviceMotion = require('DeviceMotion');
       const deviceWorldTransform = DeviceMotion.worldTransform;
       var yRot = deviceWorldTransform.rotationY;
 
-      var NewXPos = Reactive.mul(Reactive.cos(yRot),touchPos.x)
-      var NewYPos = Reactive.mul(touchPos.y,-1)
-      var NewZPos = Reactive.mul(Reactive.mul(Reactive.sin(yRot),touchPos.x),-1)
+      var zeroVector = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
+
+      var NewXPos;
+      var NewYPos;
+      var NewZPos;
+
+
+      NewXPos = Reactive.mul(Reactive.cos(yRot),touchPos.x).add(blockTransform.x.pinLastValue());
+      NewYPos = Reactive.mul(touchPos.y,-1).add(blockTransform.y.pinLastValue());
+      NewZPos = Reactive.mul(Reactive.mul(Reactive.sin(yRot),touchPos.x),-1).add(blockTransform.z.pinLastValue());
+
+
 
       blockTransform.x = NewXPos;
       blockTransform.y = NewYPos;
@@ -219,8 +271,6 @@ function moveBlock(bid){
   }
 }
 TouchGestures.onPan().subscribe(function (gesture) {
-  Diagnostics.log("BIGGGGG")
-
   moveBlock(numBlock- 1);
 });
 
