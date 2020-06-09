@@ -21,6 +21,56 @@ const gravityButton = root.child('Device').child('Camera').child('gravityButton'
 const resetButton = root.child('Device').child('Camera').child('resetButton');
 const planeTracker = root.child('planeTracker0')
 const camera = root.child('Device').child('Camera');
+const deviceWorldTransform = DeviceMotion.worldTransform;
+
+
+
+
+
+
+const but = camera.child('plane0')
+//projectile
+const cube = planeTracker.child('Sphere')
+const cube2 = planeTracker.child('Sphere0')
+//projectile transform
+var ct = cube.transform
+var ct2 = cube2.transform
+//device transform
+var camx = deviceWorldTransform.x;
+var camz = deviceWorldTransform.z;
+//device rotation
+var ry = deviceWorldTransform.rotationY;
+var rz = deviceWorldTransform.rotationZ;
+var rx = deviceWorldTransform.rotationX;
+var radius = 1;
+// x position of cube orbit
+var res = Reactive.mul(radius, Reactive.sin(ry));
+// z position of cube orbit
+var resz = Reactive.mul(radius, Reactive.cos(ry));
+// y position of cube orbit + offset
+var resy = Reactive.add(Reactive.mul(radius, Reactive.tan(rx)), .5);
+// adjusting for difference in coordinates
+var resetz = Reactive.add(1.6, camz);
+// orbit position + offset from device position if z > 1
+var newxp = Reactive.add(Reactive.neg(res), camx);
+//if z > 0
+var newzp = Reactive.add(Reactive.neg(resz), resetz);
+//if z = 0
+var newzn = Reactive.add(resz, resetz);
+//hides cube/cube2 if (cube > 0)/(cube2 < 3)
+cube.hidden = rz.gt(0);
+cube2.hidden = rz.lt(3);
+//setting cube transforms
+ct.x = newxp.mul(100);
+ct.y = resy.mul(100);
+ct.z = newzp.mul(100);
+ct2.y = resy.mul(100);
+ct2.x = newxp.mul(100);
+ct2.z = newzn.mul(100);
+
+
+
+
 
 
 
@@ -70,8 +120,31 @@ var updateTimer;
     }
     return positions;
 }*/
+function initspere(spos) {
+    var sphereBody = new CANNON.Body({
+        mass: 2, // kg
+        position: spos,
+        shape: new CANNON.Sphere(1)
+    })
+    return sphereBody;
+}
+function fire() {
+    var spos = new CANNON.Vec3(ct.x.pinLastValue(), ct.y.pinLastValue(), ct.z.pinLastValue());
+    var spos2 = new CANNON.Vec3(ct2.x.pinLastValue(), ct2.y.pinLastValue(), ct2.z.pinLastValue());
 
+    var newsphere = initspere(spos);
+    worldObjects.push({ sceneObject: cube, physicsObject: newsphere })
 
+    cannonHelper = new CannonHelper(worldObjects)
+    var force = new CANNON.Vec3(1, 1, -300)
+    newsphere.applyLocalImpulse(force, spos)
+
+}
+TouchGestures.onTap(but).subscribe(function (e) {
+   gravitySignal = (!gravitySignal);
+
+    fire();
+});
 
 
 function updatePhysicsObjects(){    //Updates the positions of the block physics objects (hitboxes)
@@ -97,7 +170,7 @@ function initBlock(pos) {  //returns a physics object of a block at a passed in 
 function makeBlock(){      //makes a new block, adds it to world objects, etc
     if(newestIndex < 10){
         var sceneBlock = blocks[newestIndex];
-        const deviceWorldTransform = DeviceMotion.worldTransform;
+
         var xCam = deviceWorldTransform.x.pinLastValue();
         var yCam = deviceWorldTransform.y.pinLastValue();
         var zCam = deviceWorldTransform.z.pinLastValue();
