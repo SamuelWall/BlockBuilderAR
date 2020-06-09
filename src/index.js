@@ -70,7 +70,11 @@ var updateTimer;
     }
     return positions;
 }*/
-function updatePhysicsObjects(){
+
+
+
+
+function updatePhysicsObjects(){    //Updates the positions of the block physics objects (hitboxes)
     for (var b = 0; b < blockPos.length; b++){
         var block = blocks[b];
         blockPos[b] = new CANNON.Vec3(block.transform.x.pinLastValue(), block.transform.y.pinLastValue(), block.transform.z.pinLastValue())
@@ -80,7 +84,7 @@ function updatePhysicsObjects(){
 
     }
 }
-function initBlock(pos) {
+function initBlock(pos) {  //returns a physics object of a block at a passed in position
     var blockLength = 25;
     var blockBody = new CANNON.Body({
         mass: 0.2,
@@ -90,40 +94,34 @@ function initBlock(pos) {
 
   return blockBody;
 }
-function makeBlock(){
+function makeBlock(){      //makes a new block, adds it to world objects, etc
     if(newestIndex < 10){
         var sceneBlock = blocks[newestIndex];
-        var pos = new CANNON.Vec3( 50*newestIndex - 50*5, 25, 0);
         const deviceWorldTransform = DeviceMotion.worldTransform;
         var xCam = deviceWorldTransform.x.pinLastValue();
         var yCam = deviceWorldTransform.y.pinLastValue();
         var zCam = deviceWorldTransform.z.pinLastValue();
-        pos = new CANNON.Vec3(xCam,yCam+1,zCam);
-        blockPos.push(pos)
+        var pos = new CANNON.Vec3(xCam,yCam+1,zCam);
+        blockPos.push(pos)                              //calculate position of new block and add to positions array
 
-        //if(newestIndex == 0)
-        //    touchPos = Reactive.vector(Reactive.val(50*newestIndex - 50*5),Reactive.val(25),Reactive.val(0))
 
-        var cannonBlock = initBlock(new CANNON.Vec3(pos.x,pos.y,pos.z));
-        worldObjects.push({sceneObject: sceneBlock, physicsObject: cannonBlock});
+        var cannonBlock = initBlock(new CANNON.Vec3(pos.x,pos.y,pos.z));      // make a physics object for the block
+        worldObjects.push({sceneObject: sceneBlock, physicsObject: cannonBlock});    //add it to world objects
 
-        changeMat(newestIndex+1);
+        changeMat(newestIndex+1);     //make the new block selected
 
-        updatePhysicsObjects();
-        //Diagnostics.log(worldObjects[0])
-        sceneBlock.hidden = false;
+        updatePhysicsObjects();      // update physics hitboxes for all blocks
+        sceneBlock.hidden = false;   //make visible
         newestIndex++;
         gravity = true;
-        //increment counter
-        //make scene block into block block
-        //make visible
-        cannonHelper = new CannonHelper(worldObjects);
+
+        cannonHelper = new CannonHelper(worldObjects);   //reset cannonhelper with new world objects
 
     }
 }
 
 
-function initWorld(){
+function initWorld(){     //resets world objects and makes them all hidden
     gravitySignal = false;
     gravity = true;
 
@@ -138,7 +136,7 @@ function initWorld(){
     cannonHelper = new CannonHelper(worldObjects);
 }
 
-function resetBlockPos(){
+function resetBlockPos(){   //resets positions to before gravity sim
     gravitySignal = false;
     gravity = true;
 
@@ -330,49 +328,3 @@ Time.ms.interval(loopTimeMs).subscribe(function(elapsedTime) {
 
     lastTime = elapsedTime
 })
-
-/*
-function resetGame() {
-  // zero everything out to make them static again
-  // you can't just set the postiion and rotation because they will still have forces applied to them
-  sphereBody.position = new CANNON.Vec3(0, 5, 0)
-  sphereBody.angularVelocity = new CANNON.Vec3(0, 0, 0)
-  sphereBody.velocity = new CANNON.Vec3(0, 0, 0)
-  sphereBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), 0)
-
-  // reset the pin positions, they change with the pins so don't stay their init value
-  pinPos = initPinPos()
-
-  // loop over all the world objects
-  for (let i = 0; i < worldObjects.length; i++) {
-    // skip the first two objects - ball/floor
-    if (i > 1) {
-      // reset the body
-      cannonHelper.resetBody(worldObjects[i].physicsObject, pinPos[i - 2])
-    }
-  }
-}*/
-
-/*
-var resetTimer
-var thrown = false
-function throwBall(xDirection) {
-  if (thrown) return
-
-  var force = new CANNON.Vec3(xDirection, 0, -300)
-  var pos = new CANNON.Vec3(0, 0, 0)
-
-  // apply an impulse on the ball to move it
-  sphereBody.applyLocalImpulse(force, pos)
-
-  thrown = true
-  if (resetTimer) {
-    Time.clearTimeout(resetTimer)
-    resetTimer = null
-  }
-
-  resetTimer = Time.setTimeout(function(elapsedTime) {
-    resetGame()
-    thrown = false
-  }, 5000)
-}*/
