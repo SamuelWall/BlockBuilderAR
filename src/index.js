@@ -70,6 +70,16 @@ var updateTimer;
     }
     return positions;
 }*/
+function updatePhysicsObjects(){
+    for (var b = 0; b < blockPos.length; b++){
+        var block = blocks[b];
+        blockPos[b] = new CANNON.Vec3(block.transform.x.pinLastValue(), block.transform.y.pinLastValue(), block.transform.z.pinLastValue())
+        worldObjects[b+1].physicsObject = initBlock(blockPos[b])
+
+        cannonHelper = new CannonHelper(worldObjects)
+
+    }
+}
 function initBlock(pos) {
     var blockLength = 25;
     var blockBody = new CANNON.Body({
@@ -96,6 +106,10 @@ function makeBlock(){
 
         var cannonBlock = initBlock(new CANNON.Vec3(pos.x,pos.y,pos.z));
         worldObjects.push({sceneObject: sceneBlock, physicsObject: cannonBlock});
+
+        changeMat(newestIndex+1);
+
+        updatePhysicsObjects();
         //Diagnostics.log(worldObjects[0])
         sceneBlock.hidden = false;
         newestIndex++;
@@ -116,6 +130,7 @@ function initWorld(){
     floor = CannonHelper.makeFloor();
 
     worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
+    blockPos = [];
     newestIndex = 0;
     for (var b in blocks){
         blocks[b].hidden = true;
@@ -127,7 +142,6 @@ function resetBlockPos(){
     gravitySignal = false;
     gravity = true;
 
-    Diagnostics.log(worldObjects)
     for(var i = 1; i < worldObjects.length; i++){
         worldObjects[i].physicsObject = initBlock(blockPos[i-1])
     }
@@ -147,11 +161,14 @@ TouchGestures.onTap(blockButton).subscribe(function (gesture) {
 });
 
 TouchGestures.onTap(gravityButton).subscribe(function(e) {
-    if(!gravitySignal){
-        gravitySignal = true;
-    }
-    else {
-        resetBlockPos();
+    if(numBlock == 0){
+        if(!gravitySignal ){
+            updatePhysicsObjects();
+            gravitySignal = true;
+        }
+        else {
+            resetBlockPos();
+        }
     }
 
 })
@@ -161,25 +178,28 @@ TouchGestures.onTap(resetButton).subscribe(function(e){
 })
 
 
-function changeMat(block, bid){
-  Promise.all([
-    Materials.findFirst('Cube_mat'),
-    Materials.findFirst('SelectedBlock_mat'),
-  ]).then(function(results){
-    if(numBlock == bid){
-      numBlock = 0;
-      block.material = results[0];
-      Patches.setScalarValue('numBlock', numBlock)
+function changeMat(bid){
+    if(!gravity){
+        Promise.all([
+            Materials.findFirst('Cube_mat'),
+            Materials.findFirst('SelectedBlock_mat'),
+        ]).then(function(results){
+            var block = blocks[bid-1].child('Cube');
+            if(numBlock == bid){
+                numBlock = 0;
+                block.material = results[0];
+                Patches.setScalarValue('numBlock', numBlock)
+            }
+            else  {//if (numBlock == 0){//<--else {
+                if(numBlock != 0){
+                    blocks[numBlock - 1].child("Cube").material = results[0];
+                }
+                numBlock = bid;
+                block.material = results[1];
+                Patches.setScalarValue('numBlock', numBlock)
+            }
+        })
     }
-    else  {//if (numBlock == 0){//<--else {
-      if(numBlock != 0){
-        blocks[numBlock - 1].child("Cube").material = results[0];
-      }
-      numBlock = bid;
-      block.material = results[1];
-      Patches.setScalarValue('numBlock', numBlock)
-    }
-  })
 }
 /*for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++){
     var block = blocks[blockIndex]
@@ -193,57 +213,66 @@ function changeMat(block, bid){
 }*/
 TouchGestures.onTap(blocks[0]).subscribe(function (gesture) {
     //if(!block.hidden){
-
-        changeMat(blocks[0].child('Cube'), 1);
+        changeMat(1);
     //}
 });
 TouchGestures.onTap(blocks[1]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[1].child('Cube'), 2);
+
+        changeMat(2);
     //}
 });
 TouchGestures.onTap(blocks[2]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[2].child('Cube'), 3);
+
+        changeMat(3);
     //}
 });
 TouchGestures.onTap(blocks[3]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[3].child('Cube'), 4);
+
+        changeMat(4);
     //}
 });
 TouchGestures.onTap(blocks[4]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[4].child('Cube'), 5);
+
+        changeMat(5);
     //}
 });
 TouchGestures.onTap(blocks[5]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[5].child('Cube'), 6);
+
+        changeMat(6);
     //}
 });
 TouchGestures.onTap(blocks[6]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[6].child('Cube'), 7);
+
+        changeMat(7);
     //}
 });
 TouchGestures.onTap(blocks[7]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[7].child('Cube'), 8);
+
+        changeMat(8);
     //}
 });
 TouchGestures.onTap(blocks[8]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[8].child('Cube'), 9);
+
+        changeMat(9);
     //}
 });
 TouchGestures.onTap(blocks[9]).subscribe(function (gesture) {
     //if(!block.hidden){
-        changeMat(blocks[9].child('Cube'), 10);
+
+        changeMat(10);
     //}
 });
 
 function moveBlock(bid){
+    Diagnostics.log(bid)
   for(var i = 0; i < blocks.length; i++){
     if(i == bid){
       var block = blocks[i];
