@@ -84,6 +84,11 @@ function makeBlock(){
     if(newestIndex < 10){
         var sceneBlock = blocks[newestIndex];
         var pos = new CANNON.Vec3( 50*newestIndex - 50*5, 25, 0);
+        const deviceWorldTransform = DeviceMotion.worldTransform;
+        var xCam = deviceWorldTransform.x.pinLastValue();
+        var yCam = deviceWorldTransform.y.pinLastValue();
+        var zCam = deviceWorldTransform.z.pinLastValue();
+        pos = new CANNON.Vec3(xCam,yCam+1,zCam);
         blockPos.push(pos)
 
         //if(newestIndex == 0)
@@ -166,7 +171,10 @@ function changeMat(block, bid){
       block.material = results[0];
       Patches.setScalarValue('numBlock', numBlock)
     }
-    else if (numBlock == 0){//<--else {
+    else  {//if (numBlock == 0){//<--else {
+      if(numBlock != 0){
+        blocks[numBlock - 1].child("Cube").material = results[0];
+      }
       numBlock = bid;
       block.material = results[1];
       Patches.setScalarValue('numBlock', numBlock)
