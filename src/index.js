@@ -318,8 +318,10 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
                 worldObjects.splice(sphereIndex,1)
                 sphereIndex = -1;
                 sphere.hidden = true;
+                setupSphereRot();
+                canShootSphere = false;
+
             }
-            canShootSphere = false;
             resetBlockPos();
         }
     }
