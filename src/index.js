@@ -91,8 +91,13 @@ var block7 = planeTracker.child('Block7')
 var block8 = planeTracker.child('Block8')
 var block9 = planeTracker.child('Block9')
 var block10 = planeTracker.child('Block10')
+var block11 = planeTracker.child('Block11')
+var block12 = planeTracker.child('Block12')
+var block13 = planeTracker.child('Block13')
+var block14 = planeTracker.child('Block14')
+var block15 = planeTracker.child('Block15')
 
-var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10]
+var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12, block12, block13, block14, block15]
 var newestIndex = 0;
 var blockPos = [];
 
@@ -156,7 +161,7 @@ function initBlock(pos) {  //returns a physics object of a block at a passed in 
   return blockBody;
 }
 function makeBlock(){      //makes a new block, adds it to world objects, etc
-    if(newestIndex < 10){
+    if(newestIndex < 15){
         var sceneBlock = blocks[newestIndex];
 
         var xCam = deviceWorldTransform.x.pinLastValue();
@@ -363,6 +368,36 @@ TouchGestures.onTap(blocks[9]).subscribe(function (gesture) {
     //if(!block.hidden){
 
         changeMat(10);
+    //}
+});
+TouchGestures.onTap(blocks[10]).subscribe(function (gesture) {
+    //if(!block.hidden){
+
+        changeMat(11);
+    //}
+});
+TouchGestures.onTap(blocks[11]).subscribe(function (gesture) {
+    //if(!block.hidden){
+
+        changeMat(12);
+    //}
+});
+TouchGestures.onTap(blocks[12]).subscribe(function (gesture) {
+    //if(!block.hidden){
+
+        changeMat(13);
+    //}
+});
+TouchGestures.onTap(blocks[13]).subscribe(function (gesture) {
+    //if(!block.hidden){
+
+        changeMat(14);
+    //}
+});
+TouchGestures.onTap(blocks[14]).subscribe(function (gesture) {
+    //if(!block.hidden){
+
+        changeMat(15);
     //}
 });
 
