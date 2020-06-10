@@ -38,6 +38,7 @@ sphere.hidden = true;
 //var ct2 = sphere.transform
 //device transform
 var cameraPosX = deviceWorldTransform.x;
+var cameraPosY = deviceWorldTransform.y;
 var cameraPosZ = deviceWorldTransform.z;
 //device rotation
 var camRotX = deviceWorldTransform.rotationX;
@@ -45,16 +46,18 @@ var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 var sphereDistance = 1;
 // x position of cube orbit
-var spherePosX = Reactive.mul(sphereDistance, Reactive.sin(camRotY));
+var spherePosX = Reactive.mul(Reactive.mul(sphereDistance, Reactive.sin(camRotY)),Reactive.cos(camRotX));
 // y position of cube orbit + offset
-var spherePosY = Reactive.add(Reactive.mul(sphereDistance, Reactive.tan(camRotX)), .5);
+var spherePosY = Reactive.add(Reactive.mul(sphereDistance, Reactive.sin(camRotX)), .5);
+//var spherePosY = Reactive.mul(sphereDistance + .5, Reactive.sin(camRotX));
 // z position of cube orbit
-var spherePosZ = Reactive.mul(sphereDistance, Reactive.cos(camRotY));
+var spherePosZ = Reactive.mul(Reactive.mul(sphereDistance, Reactive.cos(camRotY)),Reactive.cos(camRotX));
 
 // adjusting for difference in coordinates
 var resetZ = Reactive.add(1.6, cameraPosZ);
 // orbit position + offset from device position if z > 1
 var newSpherePosX = Reactive.add(Reactive.neg(spherePosX), cameraPosX);
+var newSpherePosY = Reactive.add(spherePosY, cameraPosY);
 //if z > 0
 var newSpherePosZ = Reactive.add(Reactive.neg(spherePosZ), resetZ);
 //if z = 0
@@ -64,7 +67,7 @@ var newSpherePosZ = Reactive.add(Reactive.neg(spherePosZ), resetZ);
 //sphere2.hidden = rz.lt(3);
 //setting cube transforms
 sphere.transform.x = newSpherePosX.mul(100);
-sphere.transform.y = spherePosY.mul(100);
+sphere.transform.y = newSpherePosY.mul(100);
 sphere.transform.z = newSpherePosZ.mul(100);
 //ct2.y = spherePosY.mul(100);
 //ct2.x = newxp.mul(100);
