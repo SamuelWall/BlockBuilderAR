@@ -130,6 +130,9 @@ function initWorld(){     //resets world objects and makes them all hidden
     floor = CannonHelper.makeFloor();
 
     worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
+    canShootSphere = false;
+    sphere.hidden = true;
+    sphereIndex = -1;
     blockPos = [];
     newestIndex = 0;
     for (var b in blocks){
@@ -314,7 +317,9 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
             if(sphereIndex != -1){
                 worldObjects.splice(sphereIndex,1)
                 sphereIndex = -1;
+                sphere.hidden = true;
             }
+            canShootSphere = false;
             resetBlockPos();
         }
     }
