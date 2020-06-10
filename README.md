@@ -1,8 +1,8 @@
-#Build and Destroy
+# Build and Destroy
 
 An augmented reality building block game
 
-##TODO
+## TODO
 1. UI
     - [ ] Make-block button
     - [ ] Gravity button
@@ -23,7 +23,7 @@ An augmented reality building block game
         - [x] Spawn cannon ball on button press
         - [x] Shoot on tap
         - [ ] Multiple shots
-        
+
     - [ ] Horde
 
 5. General fixes
