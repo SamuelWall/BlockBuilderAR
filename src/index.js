@@ -97,7 +97,7 @@ var block13 = planeTracker.child('Block13')
 var block14 = planeTracker.child('Block14')
 var block15 = planeTracker.child('Block15')
 
-var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12, block12, block13, block14, block15]
+var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12, block13, block14, block15]
 var newestIndex = 0;
 var blockPos = [];
 
@@ -400,6 +400,7 @@ TouchGestures.onTap(blocks[14]).subscribe(function (gesture) {
         changeMat(15);
     //}
 });
+
 
 
 Time.ms.interval(loopTimeMs).subscribe(function(elapsedTime) {
