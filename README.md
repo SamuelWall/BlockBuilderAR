@@ -28,6 +28,8 @@ An augmented reality building block game
 
 ### General fixes
 - [x] Disallow gravity when block is selected and vice versa
+- [x] Fix Cannonball trajectory
+- [x] Fixed order and response of worldObjects
 - [ ] Blocks placed on top of each other glitch
 - [ ] Place block below floor glitch
 - [ ] Blocks jump around on pan
