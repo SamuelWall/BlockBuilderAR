@@ -46,7 +46,7 @@ var camRotZ = deviceWorldTransform.rotationZ;
 function setupSphereRot(){
     //projectile transform
 
-    var sphereDistance = 1;
+    var sphereDistance = 1.7;
     // x position of cube orbit
     var spherePosX = Reactive.mul(Reactive.mul(sphereDistance, Reactive.sin(camRotY)),Reactive.cos(camRotX));
     // y position of cube orbit + offset
@@ -227,10 +227,13 @@ function fireSphere() {
     sphereIndex = worldObjects.length - 1;
 
     //var camRotY = deviceWorldTransform.rotationY
-    var sfx = Reactive.sin(camRotY).pinLastValue();
-    var sfz = Reactive.cos(camRotY).pinLastValue();
-    //var sphereForce = new CANNON.Vec3(sfx * -100, 7, sfz * -100)
-    var sphereForce = new CANNON.Vec3(1, 1, -300)
+    var sphereforceX = Reactive.sin(camRotY).pinLastValue() * Reactive.cos(camRotX).pinLastValue();
+    var sphereforceZ = Reactive.cos(camRotY).pinLastValue() * Reactive.cos(camRotX).pinLastValue();
+    var sphereforceY = Reactive.sin(camRotX).pinLastValue();
+
+    var sphereForce = new CANNON.Vec3(sphereforceX * -300, sphereforceY * 300, sphereforceZ * -300)
+    //var sphereForce = new CANNON.Vec3(sfx * -200, 7, sfz * -200)
+    //var sphereForce = new CANNON.Vec3(1, 1, -300)
     cannonSphere.applyLocalImpulse(sphereForce, spherePos)
 
 }
