@@ -46,7 +46,7 @@ var camRotZ = deviceWorldTransform.rotationZ;
 function setupSphereRot(){
     //projectile transform
 
-    var sphereDistance = 1.7;
+    var sphereDistance = 1.3;
     // x position of cube orbit
     var spherePosX = Reactive.mul(Reactive.mul(sphereDistance, Reactive.sin(camRotY)),Reactive.cos(camRotX));
     // y position of cube orbit + offset
@@ -177,11 +177,11 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         var xCam = deviceWorldTransform.x.pinLastValue();
         var yCam = deviceWorldTransform.y.pinLastValue();
         var zCam = deviceWorldTransform.z.pinLastValue();
-        var pos = new CANNON.Vec3(xCam,yCam+1,zCam);
+        var pos = new CANNON.Vec3(xCam,yCam+10,zCam);
         blockPos.push(pos)                              //calculate position of new block and add to positions array
 
 
-        var cannonBlock = initBlock(new CANNON.Vec3(pos.x,pos.y,pos.z));      // make a physics object for the block
+        var cannonBlock = initBlock(pos);      // make a physics object for the block
         worldObjects.push({sceneObject: sceneBlock, physicsObject: cannonBlock});    //add it to world objects
 
         changeMat(newestIndex+1);     //make the new block selected
@@ -231,7 +231,7 @@ function fireSphere() {
     var sphereforceZ = Reactive.cos(camRotY).pinLastValue() * Reactive.cos(camRotX).pinLastValue();
     var sphereforceY = Reactive.sin(camRotX).pinLastValue();
 
-    var sphereForce = new CANNON.Vec3(sphereforceX * -300, sphereforceY * 300, sphereforceZ * -300)
+    var sphereForce = new CANNON.Vec3(sphereforceX * -500, sphereforceY * 500, sphereforceZ * -500)
     //var sphereForce = new CANNON.Vec3(sfx * -200, 7, sfz * -200)
     //var sphereForce = new CANNON.Vec3(1, 1, -300)
     cannonSphere.applyLocalImpulse(sphereForce, spherePos)
@@ -356,93 +356,49 @@ TouchGestures.onTap().subscribe(function (gesture){
 
 
 TouchGestures.onTap(blocks[0]).subscribe(function (gesture) {
-    //if(!block.hidden){
         changeMat(1);
-    //}
 });
 TouchGestures.onTap(blocks[1]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(2);
-    //}
 });
 TouchGestures.onTap(blocks[2]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(3);
-    //}
 });
 TouchGestures.onTap(blocks[3]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(4);
-    //}
 });
 TouchGestures.onTap(blocks[4]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(5);
-    //}
 });
 TouchGestures.onTap(blocks[5]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(6);
-    //}
 });
 TouchGestures.onTap(blocks[6]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(7);
-    //}
 });
 TouchGestures.onTap(blocks[7]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(8);
-    //}
 });
 TouchGestures.onTap(blocks[8]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(9);
-    //}
 });
 TouchGestures.onTap(blocks[9]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(10);
-    //}
 });
 TouchGestures.onTap(blocks[10]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(11);
-    //}
 });
 TouchGestures.onTap(blocks[11]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(12);
-    //}
 });
 TouchGestures.onTap(blocks[12]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(13);
-    //}
 });
 TouchGestures.onTap(blocks[13]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(14);
-    //}
 });
 TouchGestures.onTap(blocks[14]).subscribe(function (gesture) {
-    //if(!block.hidden){
-
         changeMat(15);
-    //}
 });
 
 
