@@ -179,12 +179,6 @@ var lastCamZ;
 function makeBlock(){      //makes a new block, adds it to world objects, etc
     if(newestIndex < 15){
         var sceneBlock = blocks[newestIndex];
-        /*
-        if(newestIndex%2 == 0)
-          var pos = new CANNON.Vec3(100,100,100)
-        else {
-          var pos = new CANNON.Vec3(0,0,0)
-        }*/
         lastCamX = cameraPosX.lastValue*100;
         lastCamY = cameraPosY.lastValue*100;
         lastCamZ = cameraPosZ.lastValue*100;
@@ -273,34 +267,34 @@ function changeMat(bid){
 }
 
 function moveBlock(bid){
-  for(var i = 0; i < blocks.length; i++){
-    if(i == bid){
-      var block = blocks[i];
-      const blockTransform = block.transform;
+    for(var i = 0; i < blocks.length; i++){
+        if(i == bid){
+            var block = blocks[i];
+            const blockTransform = block.transform;
 
-      var touchPos = Patches.getVectorValue('patchPosition'+(i+1));
+            var touchPos = Patches.getVectorValue('patchPosition'+(i+1));
 
 
       // Get the angle of the camera
       //const DeviceMotion = require('DeviceMotion');
-      var yRot = deviceWorldTransform.rotationY;
+            var yRot = deviceWorldTransform.rotationY;
 
-      var zeroVector = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
+            var zeroVector = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
 
       //var NewXPos;
       //var NewYPos;
       //var NewZPos;
 
 
-      var NewXPos = Reactive.add(lastCamX,Reactive.mul(Reactive.cos(yRot),touchPos.x));
-      var NewYPos = Reactive.add(lastCamY,Reactive.mul(touchPos.y,-1));
-      var NewZPos = Reactive.add(lastCamZ,Reactive.mul(Reactive.mul(Reactive.sin(yRot),touchPos.x),-1));
+            var NewXPos = Reactive.add(lastCamX,Reactive.mul(Reactive.cos(yRot),touchPos.x));
+            var NewYPos = Reactive.add(lastCamY,Reactive.mul(touchPos.y,-1));
+            var NewZPos = Reactive.add(lastCamZ,Reactive.mul(Reactive.mul(Reactive.sin(yRot),touchPos.x),-1));
 
 
 
-      blockTransform.x = NewXPos;
-      blockTransform.y = NewYPos;
-      blockTransform.z = NewZPos;
+            blockTransform.x = NewXPos;
+            blockTransform.y = NewYPos;
+            blockTransform.z = NewZPos;
 
       //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
     }
@@ -309,7 +303,7 @@ function moveBlock(bid){
 
 
 TouchGestures.onPan().subscribe(function (gesture) {
-  moveBlock(numBlock- 1);
+    moveBlock(numBlock- 1);
 });
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if(!gravitySignal)
@@ -369,49 +363,49 @@ for(var i = 0; i < blocks.length; i++){
 }
 */
 TouchGestures.onTap(blocks[0]).subscribe(function (gesture) {
-        changeMat(1);
+    changeMat(1);
 });
 TouchGestures.onTap(blocks[1]).subscribe(function (gesture) {
-        changeMat(2);
+    changeMat(2);
 });
 TouchGestures.onTap(blocks[2]).subscribe(function (gesture) {
-        changeMat(3);
+    changeMat(3);
 });
 TouchGestures.onTap(blocks[3]).subscribe(function (gesture) {
-        changeMat(4);
+    changeMat(4);
 });
 TouchGestures.onTap(blocks[4]).subscribe(function (gesture) {
-        changeMat(5);
+    changeMat(5);
 });
 TouchGestures.onTap(blocks[5]).subscribe(function (gesture) {
-        changeMat(6);
+    changeMat(6);
 });
 TouchGestures.onTap(blocks[6]).subscribe(function (gesture) {
-        changeMat(7);
+    changeMat(7);
 });
 TouchGestures.onTap(blocks[7]).subscribe(function (gesture) {
-        changeMat(8);
+    changeMat(8);
 });
 TouchGestures.onTap(blocks[8]).subscribe(function (gesture) {
-        changeMat(9);
+    changeMat(9);
 });
 TouchGestures.onTap(blocks[9]).subscribe(function (gesture) {
-        changeMat(10);
+    changeMat(10);
 });
 TouchGestures.onTap(blocks[10]).subscribe(function (gesture) {
-        changeMat(11);
+    changeMat(11);
 });
 TouchGestures.onTap(blocks[11]).subscribe(function (gesture) {
-        changeMat(12);
+    changeMat(12);
 });
 TouchGestures.onTap(blocks[12]).subscribe(function (gesture) {
-        changeMat(13);
+    changeMat(13);
 });
 TouchGestures.onTap(blocks[13]).subscribe(function (gesture) {
-        changeMat(14);
+    changeMat(14);
 });
 TouchGestures.onTap(blocks[14]).subscribe(function (gesture) {
-        changeMat(15);
+    changeMat(15);
 });
 
 
