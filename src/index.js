@@ -176,13 +176,39 @@ function initBlock(position) {  //returns a physics object of a block at a passe
 var lastCamX;
 var lastCamY;
 var lastCamZ;
+//var lastCamRotX;
+var lastCamRotY;
+var lastCamRotZ;
+Diagnostics.watch("GATE: " ,cameraPosZ )
 function makeBlock(){      //makes a new block, adds it to world objects, etc
     if(newestIndex < 15){
         var sceneBlock = blocks[newestIndex];
-        lastCamX = cameraPosX.lastValue*100;
-        lastCamY = cameraPosY.lastValue*100;
-        lastCamZ = cameraPosZ.lastValue*100;
-        var Npos = new CANNON.Vec3(lastCamX, lastCamY + 10, lastCamZ);
+        lastCamRotY = camRotY.lastValue
+        lastCamRotZ = camRotZ.lastValue
+        var pseudoRadius = 160;
+        var offsetX = (cameraPosX.lastValue/2) * 100;
+        lastCamX = (-pseudoRadius*Math.sin(lastCamRotY)+(cameraPosX.lastValue*pseudoRadius)) - offsetX;
+        lastCamY = (cameraPosY.lastValue*pseudoRadius) + 10;
+        var neg = 1
+        var objectWorldPosZ = cameraPosZ.lastValue + 1.6;
+        var offsetZ = pseudoRadius - (cameraPosZ.lastValue / 2)*160 ;
+        var latterOffset = 0
+        if(lastCamRotZ != 0) {
+            neg = -1;
+            latterOffset = 2 * objectWorldPosZ * 100;
+            //offsetZ = 20;
+            /*if (cameraPosZ.lastValue < 0) {
+                neg = 1;
+            }
+        }
+        */
+
+        }
+        lastCamZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(cameraPosZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
+
+        //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*lastCamX), lastCamY + 10, (Math.cos(lastCamRotY)*lastCamY));
+
+        var Npos = new CANNON.Vec3(lastCamX, lastCamY, lastCamZ);
         blockPos.push(Npos)                              //calculate position of new block and add to positions array
 
 
