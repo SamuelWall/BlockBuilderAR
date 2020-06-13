@@ -193,7 +193,7 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         var objectWorldPosZ = cameraPosZ.lastValue + 1.6;
         var offsetZ = pseudoRadius - (cameraPosZ.lastValue / 2)*160 ;
         var latterOffset = 0
-        if(lastCamRotZ != 0) {
+        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
             neg = -1;
             latterOffset = 2 * objectWorldPosZ * 100;
             //offsetZ = 20;
