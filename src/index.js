@@ -27,8 +27,8 @@ const deviceWorldTransform = DeviceMotion.worldTransform;
 const block_red = Materials.get('Block_mat_red');
 const block_blue = Materials.get('Block_mat_blue');
 const block_green = Materials.get('Block_mat_green');
-
-var mats = [block_red, block_blue, block_green]
+const block_yellow = Materials.get('Block_mat_yellow');
+var mats = [block_red, block_blue, block_green, block_yellow]
 
 
 
