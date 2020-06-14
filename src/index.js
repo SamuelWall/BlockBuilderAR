@@ -41,7 +41,7 @@ sphere.hidden = true;
 //sphere2.hidden = true;
 //var ct2 = sphere.transform
 //device transform
-var cameraPosX = deviceWorldTransform.x;
+var cameraPosX = deviceWorldTransform.x; //may not work
 var cameraPosY = deviceWorldTransform.y;
 var cameraPosZ = deviceWorldTransform.z;
 var newBlockX = deviceWorldTransform.position.x;
@@ -203,12 +203,12 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         lastCamRotY = camRotY.lastValue
         lastCamRotZ = camRotZ.lastValue
         var pseudoRadius = 150;
-        var offsetX = (cameraPosX.lastValue/2) * 100;
-        lastCamX = (-pseudoRadius*Math.sin(lastCamRotY)+(cameraPosX.lastValue*pseudoRadius)) - offsetX;
-        lastCamY = (cameraPosY.lastValue*pseudoRadius) + 10;
+        var offsetX = (newBlockX.lastValue/2) * 100;
+        lastCamX = (-pseudoRadius*Math.sin(lastCamRotY)+(newBlockX.lastValue*pseudoRadius)) - offsetX;
+        lastCamY = (newBlockY.lastValue*pseudoRadius) + 10;
         var neg = 1
-        var objectWorldPosZ = cameraPosZ.lastValue + 1.5;
-        var offsetZ = pseudoRadius - (cameraPosZ.lastValue / 2)*150 ;
+        var objectWorldPosZ = newBlockZ.lastValue + 1.5;
+        var offsetZ = pseudoRadius - (newBlockZ.lastValue / 2)*150 ;
         var latterOffset = 0
         if(Math.abs(lastCamRotZ) > Math.PI / 2) {
             neg = -1;
@@ -221,7 +221,7 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         */
 
         }
-        lastCamZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(cameraPosZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
+        lastCamZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(newBlockZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
 
         //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*lastCamX), lastCamY + 10, (Math.cos(lastCamRotY)*lastCamY));
 
