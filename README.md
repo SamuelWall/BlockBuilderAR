@@ -8,21 +8,30 @@ An augmented reality building block game
 - [ ] Gravity button
 - [ ] Reset button
 - [ ] Discuss extended UI
+- [ ] Add Pop - ups
 
 ### Script functionality for UI
 - [x] Turn on gravity
 - [x] Make block visible on creation
-- [ ] Make blocks spawn in front of user
+- [x] Make blocks spawn in front of user
 
-### Move blocks
+### Blocks
 - [x] Make blocks draggable
 - [x] Select and deselect blocks
+- [ ] Edit Block size and distance
+- [ ] Add color changes (Random)
 
 ### Destruction
 * Cannon Ball
     - [x] Spawn cannon ball on button press
     - [x] Shoot on tap
-    - [ ] Multiple shots
+    - [x] Multiple shots
+    
+* Car
+    - [ ] Create car on spawn
+    - [ ] Tire animation?
+    - [ ] Control Direction of force/Car
+    
 
 - [ ] Horde
 
@@ -30,6 +39,9 @@ An augmented reality building block game
 - [x] Disallow gravity when block is selected and vice versa
 - [x] Fix Cannonball trajectory
 - [x] Fixed order and response of worldObjects
-- [ ] Blocks placed on top of each other glitch
 - [ ] Place block below floor glitch
-- [ ] Blocks jump around on pan
+- [x] Blocks jump around on pan
+- [ ] Block moves on rotation
+- [ ] Fix Cannonball position for following camera
+- [ ] Fix Wonkiness of New block spawn
+
