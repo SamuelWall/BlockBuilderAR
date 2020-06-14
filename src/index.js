@@ -17,11 +17,13 @@ const fd = Scene.root
   .child('Device')
   .child('Camera')
   .child('Focal Distance')
-const blockButton = root.child('Device').child('Camera').child('blockButton');
-const gravityButton = root.child('Device').child('Camera').child('gravityButton');
-const resetButton = root.child('Device').child('Camera').child('resetButton');
+
 const planeTracker = root.child('planeTracker0')
 const camera = root.child('Device').child('Camera');
+const blockButton = camera.child('blockButton');
+const gravityButton = camera.child('gravityButton');
+const resetButton = camera.child('resetButton');
+const cannonButton = camera.child('cannonButton')
 const deviceWorldTransform = DeviceMotion.worldTransform;
 
 const block_red = Materials.get('Block_mat_red');
@@ -33,7 +35,7 @@ var mats = [block_red, block_blue, block_green, block_yellow]
 
 
 
-const cannonButton = camera.child('cannonButton')
+
 //projectile
 const sphere = planeTracker.child('Sphere')
 //const sphere2 = planeTracker.child('Sphere0')
@@ -166,6 +168,7 @@ function updatePhysicsObjects(cutOff = 0){    //Updates the positions of the blo
         worldObjects[b+1].physicsObject = initBlock(blockPos[b])
 
         cannonHelper = new CannonHelper(worldObjects)
+
 
     }
 }
@@ -322,21 +325,11 @@ function moveBlock(bid){
 
 
       // Get the angle of the camera
-      //const DeviceMotion = require('DeviceMotion');
             var yRot = deviceWorldTransform.rotationY;
-
-            var zeroVector = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
-
-      //var NewXPos;
-      //var NewYPos;
-      //var NewZPos;
-
 
             var NewXPos = Reactive.add(lastCamX,Reactive.mul(Reactive.cos(yRot),touchPos.x));
             var NewYPos = Reactive.add(lastCamY,Reactive.mul(touchPos.y,-1));
             var NewZPos = Reactive.add(lastCamZ,Reactive.mul(Reactive.mul(Reactive.sin(yRot),touchPos.x),-1));
-
-
 
             blockTransform.x = NewXPos;
             blockTransform.y = NewYPos;
