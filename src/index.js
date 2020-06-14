@@ -8,6 +8,7 @@ const Reactive = require('Reactive');
 const TouchGestures = require('TouchGestures')
 const DeviceMotion = require('DeviceMotion');
 const Patches = require('Patches');
+const Random = require('Random');
 
 
 
@@ -23,7 +24,11 @@ const planeTracker = root.child('planeTracker0')
 const camera = root.child('Device').child('Camera');
 const deviceWorldTransform = DeviceMotion.worldTransform;
 
+const block_red = Materials.get('Block_mat_red');
+const block_blue = Materials.get('Block_mat_blue');
+const block_green = Materials.get('Block_mat_green');
 
+var mats = [block_red, block_blue, block_green]
 
 
 
@@ -118,6 +123,7 @@ var block15 = planeTracker.child('Block15')
 var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12, block13, block14, block15]
 var newestIndex = 0;
 var blockPos = [];
+var blockMat = [];
 
 //var touchPos = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
 
@@ -146,6 +152,7 @@ function initWorld(){     //resets world objects and makes them all hidden
     sphere.hidden = true;
     sphereIndex = -1;
     blockPos = [];
+    blockMat = [];
     newestIndex = 0;
     for (var b in blocks){
         blocks[b].hidden = true;
@@ -188,6 +195,8 @@ var lastCamZ;
 //var lastCamRotX;
 var lastCamRotY;
 var lastCamRotZ;
+
+
 function makeBlock(){      //makes a new block, adds it to world objects, etc
     if(newestIndex < 15){
         var sceneBlock = blocks[newestIndex];
@@ -219,6 +228,8 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         var Npos = new CANNON.Vec3(lastCamX, lastCamY, lastCamZ);
         blockPos.push(Npos)                              //calculate position of new block and add to positions array
 
+        var matIndex = Math.floor(Random.random() * mats.length);
+        blockMat.push(matIndex)
 
         // make a physics object for the block
         worldObjects.push({sceneObject: sceneBlock, physicsObject: initBlock(Npos)});    //add it to world objects
@@ -285,12 +296,13 @@ function changeMat(bid){
             var block = blocks[bid-1].child('Cube');
             if(numBlock == bid){
                 numBlock = 0;
-                block.material = results[0];
+                //block.material = results[0];
+                block.material = mats[blockMat[bid-1]]
                 Patches.setScalarValue('numBlock', numBlock)
             }
-            else  {//if (numBlock == 0){//<--else {
+            else  {
                 if(numBlock != 0){
-                    blocks[numBlock - 1].child("Cube").material = results[0];
+                    blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock-1]];
                 }
                 numBlock = bid;
                 block.material = results[1];
