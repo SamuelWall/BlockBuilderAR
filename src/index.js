@@ -196,6 +196,33 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
 
         lastCamRotY = camRotY.lastValue
         lastCamRotZ = camRotZ.lastValue
+        var pseudoRadius = 150;
+        var offsetX = (newBlockX.lastValue/2) * 100;
+        lastCamX = (-pseudoRadius*Math.sin(lastCamRotY)+(newBlockX.lastValue*pseudoRadius)) - offsetX;
+        lastCamY = (newBlockY.lastValue*pseudoRadius) + 10;
+        var neg = 1
+        var objectWorldPosZ = newBlockZ.lastValue + 1.5;
+        var offsetZ = pseudoRadius - (newBlockZ.lastValue / 2)*150 ;
+        var latterOffset = 0
+        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
+            neg = -1;
+            latterOffset = 2 * objectWorldPosZ * 100;
+            //offsetZ = 20;
+            /*if (cameraPosZ.lastValue < 0) {
+                neg = 1;
+            }
+            */
+        }
+
+
+        lastCamZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(newBlockZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
+
+        //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*lastCamX), lastCamY + 10, (Math.cos(lastCamRotY)*lastCamY));
+
+        var Npos = new CANNON.Vec3(lastCamX, lastCamY, lastCamZ);
+        /*
+        lastCamRotY = camRotY.lastValue
+        lastCamRotZ = camRotZ.lastValue
 
         lastCamX = ((Math.sin(lastCamRotY)+ newBlockX.lastValue) * -1.5 + 2*newBlockX.lastValue + (newBlockX.lastValue * .5))*100
         lastCamY = newBlockY.lastValue * 100;
@@ -212,7 +239,7 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         }
         lastCamZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
 
-        var Npos = new CANNON.Vec3(lastCamX, lastCamY, lastCamZ);
+        var Npos = new CANNON.Vec3(lastCamX, lastCamY, lastCamZ); */
         blockPos.push(Npos)                              //calculate position of new block and add to positions array
 
         var matIndex = Math.floor(Random.random() * mats.length);
