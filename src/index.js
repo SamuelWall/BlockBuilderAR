@@ -75,7 +75,7 @@ function setupSphereRot(){
     var newSpherePosX = Reactive.add(Reactive.neg(Reactive.mul(spherePosX,100)), Reactive.mul(100,newBlockX));
     var newSpherePosY = Reactive.add(Reactive.mul(spherePosY,100), Reactive.mul(100,Reactive.add(newBlockY, .5)));
     //if z > 0
-    var newSpherePosZ = Reactive.add(Reactive.neg(Reactive.mul(spherePosZ,100)), resetZ);
+    var newSpherePosZ = Reactive.add(Reactive.add(Reactive.neg(Reactive.mul(spherePosZ,100)), resetZ), -40);
     //if z = 0
     //var newzn = Reactive.add(spherePosZ, resetZ);
     //hides cube/cube2 if (cube > 0)/(cube2 < 3)
