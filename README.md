@@ -4,10 +4,12 @@ An augmented reality building block game
 
 ## TODO
 ### UI
-- [ ] Make-block button
-- [ ] Gravity button
-- [ ] Reset button
-- [ ] Discuss extended UI
+- [x] Make-block button
+- [x] Gravity button
+- [x] Reset button
+- [x] Discuss extended UI
+- [x] select colors button
+- [ ] color options buttons
 - [ ] Add Pop - ups
 
 ### Script functionality for UI
@@ -19,7 +21,7 @@ An augmented reality building block game
 - [x] Make blocks draggable
 - [x] Select and deselect blocks
 - [ ] Edit Block size and distance
-- [ ] Add color changes (Random)
+- [x] Add color changes (Random)
 
 ### Destruction
 * Cannon Ball
@@ -39,7 +41,7 @@ An augmented reality building block game
 - [x] Disallow gravity when block is selected and vice versa
 - [x] Fix Cannonball trajectory
 - [x] Fixed order and response of worldObjects
-- [ ] Place block below floor glitch
+- [ ] Place block below floor glitch (Maybe add Instructions when below floor)
 - [x] Blocks jump around on pan
 - [ ] Block moves on rotation
 - [ ] Fix Cannonball position for following camera
