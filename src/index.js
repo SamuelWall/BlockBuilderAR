@@ -43,9 +43,14 @@ const selected_green = Materials.get('Selected_mat_green');
 const selected_yellow = Materials.get('Selected_mat_yellow');
 var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow]
 
+const car = planeTracker.child("car");
+const carButton = camera.child('carbutt');
+const carAnim = planeTracker.child('carAnim');
+carButton.hidden = true;
 
-
-
+carAnim.transform.x = car.transform.x;
+carAnim.transform.z = car.transform.z;
+carAnim.hidden = true;
 
 //projectile
 const sphere = planeTracker.child('Sphere')
@@ -95,11 +100,25 @@ function setupSphereRot(){
     sphere.transform.y = newSpherePosY//.mul(100);
     sphere.transform.z = newSpherePosZ//.mul(100);
 }
-
 var canShootSphere = false;
 setupSphereRot();
 
+function setupCarPos() {
 
+    var touchPos = Patches.getVectorValue('CarPosition');
+
+
+    // Get the angle of the camera
+  //  var yRot = deviceWorldTransform.rotationY;
+
+    //var NewXPos =  Reactive.mul(Reactive.cos(yRot), touchPos.x);
+
+
+
+   car.transform.x = touchPos.x;
+
+}
+var canShootCar = false;
 
 
 import CANNON from 'cannon'
@@ -132,6 +151,7 @@ var blockMat = [];
 
 var numBlock = 0;
 var sphereIndex = -1;
+var carIndex = -1;
 
 var worldObjects = [];
 var floor;
@@ -310,6 +330,44 @@ function fireSphere() {
     cannonSphere.applyLocalImpulse(sphereForce, spherePos)
     cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
 }
+function initCar(carpos) {
+    var carBody = new CANNON.Body({
+        mass: 2, // kg
+        position: carpos,
+        shape: new CANNON.Sphere(2)
+    })
+    return carBody;
+}
+
+function setupCar() {
+
+
+
+    if (carIndex != -1) {
+        worldObjects.splice(carIndex, 1);
+        carIndex = -1;
+    }
+
+    canShootCar = true;
+
+}
+function fireCar() {
+    canShootCar = false;
+    var carPos = new CANNON.Vec3(car.transform.x.pinLastValue(), 0, car.transform.z.pinLastValue())
+    //var spherePos = new CANNON.Vec3(sphere.transform.x.pinLastValue(), sphere.transform.y.pinLastValue(), sphere.transform.z.pinLastValue());
+    var cannonCar = initCar(carPos);
+    worldObjects.push({ sceneObject: car, physicsObject: cannonCar })
+    cannonHelper = new CannonHelper(worldObjects)
+   carIndex = worldObjects.length - 1;
+
+    //var camRotY = deviceWorldTransform.rotationY
+
+
+    var carForce = new CANNON.Vec3( 0, 0, -500)
+
+    cannonCar.applyLocalImpulse(carForce, carPos)
+   // cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
+}
 
 
 function changeMat(bid){
@@ -371,6 +429,7 @@ function moveBlock(bid){
 
 TouchGestures.onPan().subscribe(function (gesture) {
     moveBlock(numBlock- 1);
+    setupCarPos();
 });
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if(!gravitySignal)
@@ -381,17 +440,20 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
     if(numBlock == 0){
         if(!gravitySignal){
             cannonButton.hidden = false;
+            carButton.hidden = false;
             updatePhysicsObjects();
             gravitySignal = true;
         }
         else {
             cannonButton.hidden = true;
+            carButton.hidden = true;
             if(sphereIndex != -1){
                 worldObjects.splice(sphereIndex,1)
                 sphereIndex = -1;
                 sphere.hidden = true;
                 setupSphereRot();
                 canShootSphere = false;
+                canShootCar = false;
 
             }
             resetBlockPos();
@@ -413,12 +475,28 @@ TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
         sphere.hidden = true;
     }
 });
+TouchGestures.onTap(carButton).subscribe(function (gesture) {
+    carAnim.hidden = false;
+    Diagnostics.log("POOOOOPPPOOOOO")
+    if (gravity && !canShootCar)
+        setupCar();
+
+    else if (canShootCar) {
+        canShootCar = false;
+        //sphere.hidden = true;
+    }
+});
 
 TouchGestures.onTap().subscribe(function (gesture){
     if(canShootSphere)
         fireSphere();
     else if(sphereIndex != -1){
         setupSphere();
+    }
+    if (canShootCar)
+        fireCar();
+    else if (carIndex != -1) {
+        //setupSphere();
     }
 });
 
