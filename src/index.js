@@ -506,6 +506,7 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
             carButton.hidden = false;
             updatePhysicsObjects();
             gravitySignal = true;
+            gravityButton.material = gravity_inverse_mat;
         }
         else {
             cannonButton.hidden = true;
