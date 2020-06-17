@@ -9,7 +9,8 @@ An augmented reality building block game
 - [x] Reset button
 - [x] Discuss extended UI
 - [x] select colors button
-- [ ] color options buttons
+- [x] color options buttons
+- [ ] implement nicer color + car ui
 - [ ] Add Pop - ups
 
 ### Script functionality for UI
@@ -30,8 +31,8 @@ An augmented reality building block game
     - [x] Multiple shots
     
 * Car
-    - [ ] Create car on spawn
-    - [ ] Tire animation?
+    - [x] Create car on spawn
+    - [x] Tire animation?
     - [ ] Control Direction of force/Car
     
 
