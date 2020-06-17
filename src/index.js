@@ -493,6 +493,14 @@ TouchGestures.onTap(resetButton).subscribe(function(gesture){
         initWorld();
 })
 TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
+    carAnim.hidden = true;
+    canShootCar = false
+
+    if(carIndex != -1){
+        worldObjects.splice(carIndex,1)
+        carIndex = -1;
+        //carAnim.hidden = true;
+    }
 
     if (gravity && !canShootSphere)
         setupSphere();
@@ -503,6 +511,16 @@ TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
     }
 });
 TouchGestures.onTap(carButton).subscribe(function (gesture) {
+    sphere.hidden = true;
+    canShootSphere = false;
+    if(sphereIndex != -1){
+        worldObjects.splice(sphereIndex,1)
+        sphereIndex = -1;
+        //sphere.hidden = true;
+        setupSphereRot();
+
+    }
+
     if (gravity && !canShootCar)
         setupCar();
 
