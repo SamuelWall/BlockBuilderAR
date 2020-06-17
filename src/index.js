@@ -28,14 +28,12 @@ const redButton = camera.child('redButton')
 const blueButton = camera.child('blueButton')
 const greenButton = camera.child('greenButton')
 const yellowButton = camera.child('yellowButton')
-const colorButton = camera.child('colorButton')
 
 redButton.hidden = true;
 blueButton.hidden = true;
 greenButton.hidden = true;
 yellowButton.hidden = true;
-colorButton.hidden = true;
-var colorsShown = false;
+
 
 const deviceWorldTransform = DeviceMotion.worldTransform;
 
@@ -398,9 +396,7 @@ function changeMat(bid){
                 greenButton.hidden = true;
                 yellowButton.hidden = true;
 
-                colorsShown = false;
 
-                colorButton.hidden = true;
                 //block.material = results[0];
                 block.material = mats[blockMat[bid-1]]
                 Patches.setScalarValue('numBlock', numBlock)
@@ -409,11 +405,10 @@ function changeMat(bid){
                 if(numBlock != 0){
                     blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock-1]];
                 }
-                //redButton.hidden = false;
-                //blueButton.hidden = false;
-                //greenButton.hidden = false;
-                //yellowButton.hidden = false;
-                colorButton.hidden = false;
+                redButton.hidden = false;
+                blueButton.hidden = false;
+                greenButton.hidden = false;
+                yellowButton.hidden = false;
 
                 numBlock = bid;
                 block.material = selectedMats[blockMat[bid-1]];
@@ -555,24 +550,7 @@ TouchGestures.onTap().subscribe(function (gesture){
     }
 });
 
-TouchGestures.onTap(colorButton).subscribe(function(gesture){
-    if(colorsShown){
-        redButton.hidden = true;
-        blueButton.hidden = true;
-        greenButton.hidden = true;
-        yellowButton.hidden = true;
 
-        colorsShown = false;
-    }
-    else{
-        redButton.hidden = false;
-        blueButton.hidden = false;
-        greenButton.hidden = false;
-        yellowButton.hidden = false;
-
-        colorsShown = true;
-    }
-})
 TouchGestures.onTap(redButton).subscribe(function(gesture){
     if(numBlock != 0){
         blockMat[numBlock-1] = 0;
