@@ -49,6 +49,9 @@ const selected_green = Materials.get('Selected_mat_green');
 const selected_yellow = Materials.get('Selected_mat_yellow');
 var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow]
 
+const gravity_mat = Materials.get('gravityBut_mat');
+const gravity_inverse_mat = Materials.get('gravity_inverse_mat');
+
 const car = planeTracker.child("car");
 const carButton = camera.child('carButton');
 const carAnimation = planeTracker.child('carAnimation');
@@ -467,12 +470,14 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
             carButton.hidden = false;
             updatePhysicsObjects();
             gravitySignal = true;
+            gravityButton.material = gravity_inverse_mat;
         }
         else {
             cannonButton.hidden = true;
             carButton.hidden = true;
             sphere.hidden = true;
             carAnimation.hidden = true;
+            gravityButton.material = gravity_mat;
             if(sphereIndex != -1){
                 worldObjects.splice(sphereIndex,1)
                 sphereIndex = -1;
