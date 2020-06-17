@@ -49,13 +49,13 @@ const selected_yellow = Materials.get('Selected_mat_yellow');
 var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow]
 
 const car = planeTracker.child("car");
-const carButton = camera.child('carbutt');
-const carAnim = planeTracker.child('carAnim');
+const carButton = camera.child('carButton');
+const carAnimation = planeTracker.child('carAnimation');
 carButton.hidden = true;
 
-carAnim.transform.x = car.transform.x;
-carAnim.transform.z = car.transform.z;
-carAnim.hidden = true;
+carAnimation.transform.x = car.transform.x;
+carAnimation.transform.z = car.transform.z;
+carAnimation.hidden = true;
 
 //projectile
 const sphere = planeTracker.child('Sphere')
@@ -339,17 +339,17 @@ function initCar(carpos) {
     var carBody = new CANNON.Body({
         mass: 2, // kg
         position: carpos,
-        shape: new CANNON.Sphere(2)
+        shape: new CANNON.Sphere(40)
     })
     return carBody;
 }
 
 function setupCar() {
 
-    carAnim.hidden = false;
+    carAnimation.hidden = false;
     car.transform.x = Reactive.val(0);
     car.transform.y = Reactive.val(0);
-    car.transform.z = Reactive.val(0);
+    car.transform.z = Reactive.val(60);
 
 
 
@@ -468,7 +468,7 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
             cannonButton.hidden = true;
             carButton.hidden = true;
             sphere.hidden = true;
-            carAnim.hidden = true;
+            carAnimation.hidden = true;
             if(sphereIndex != -1){
                 worldObjects.splice(sphereIndex,1)
                 sphereIndex = -1;
@@ -480,7 +480,7 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
             if(carIndex != -1){
                 worldObjects.splice(carIndex,1)
                 carIndex = -1;
-                //carAnim.hidden = true;
+                //carAnimation.hidden = true;
                 canShootCar = false
             }
             resetBlockPos();
@@ -508,7 +508,7 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
 
     else if (canShootCar) {
         canShootCar = false;
-        carAnim.hidden = true;
+        carAnimation.hidden = true;
     }
 });
 
