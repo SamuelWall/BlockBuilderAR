@@ -34,6 +34,7 @@ An augmented reality building block game
     - [x] Create car on spawn
     - [x] Tire animation?
     - [ ] Control Direction of force/Car
+    - [ ] Fix HitBox, and multiple shots
     
 
 - [ ] Horde
@@ -44,7 +45,8 @@ An augmented reality building block game
 - [x] Fixed order and response of worldObjects
 - [ ] Place block below floor glitch (Maybe add Instructions when below floor)
 - [x] Blocks jump around on pan
-- [ ] Block moves on rotation
+- [x] Block moves on rotation
 - [ ] Fix Cannonball position for following camera
 - [ ] Fix Wonkiness of New block spawn
+- [ ] Fix minor block jumps after rotation
 
