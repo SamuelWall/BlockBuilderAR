@@ -368,7 +368,7 @@ function fireCar() {
     var cannonCar = initCar(carPos);
     worldObjects.push({ sceneObject: car, physicsObject: cannonCar })
     cannonHelper = new CannonHelper(worldObjects)
-   carIndex = worldObjects.length - 1;
+    carIndex = worldObjects.length - 1;
 
     //var camRotY = deviceWorldTransform.rotationY
 
@@ -467,14 +467,21 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
         else {
             cannonButton.hidden = true;
             carButton.hidden = true;
+            sphere.hidden = true;
+            carAnim.hidden = true;
             if(sphereIndex != -1){
                 worldObjects.splice(sphereIndex,1)
                 sphereIndex = -1;
-                sphere.hidden = true;
+                //sphere.hidden = true;
                 setupSphereRot();
                 canShootSphere = false;
-                canShootCar = false;
 
+            }
+            if(carIndex != -1){
+                worldObjects.splice(carIndex,1)
+                carIndex = -1;
+                //carAnim.hidden = true;
+                canShootCar = false
             }
             resetBlockPos();
         }
