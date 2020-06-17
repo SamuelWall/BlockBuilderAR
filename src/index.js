@@ -207,6 +207,12 @@ function initWorld(){     //resets world objects and makes them all hidden
     canShootSphere = false;
     sphere.hidden = true;
     carAnimation.hidden = true;
+    redButton.hidden = true;
+    blueButton.hidden = true;
+    greenButton.hidden = true;
+    yellowButton.hidden = true;
+    cannonButton.material = ball_mat;
+    carButton.material = car_mat;
     sphereIndex = -1;
     blockPos = [];
     blockMat = [];
@@ -335,6 +341,7 @@ function initSphere(pos) {
 function setupSphere(){
     sphere.hidden = false;
 
+    cannonButton.material = selected_ball_mat;
 
     if(sphereIndex != -1){
         worldObjects.splice(sphereIndex, 1);
@@ -374,7 +381,7 @@ function initCar(carpos) {
 }
 
 function setupCar() {
-
+    carButton.material = selected_car_mat;
     carAnimation.hidden = false;
     car.transform.x = Reactive.val(0);
     car.transform.y = Reactive.val(0);
@@ -488,10 +495,7 @@ TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if(!gravitySignal) {
         makeBlock();
         blockButton.material = selected_add_block_mat;
-        Time.setTimeout(function () {
-            blockButton.material = add_block_mat;
-        },
-        125);
+        Time.setTimeout(function(){ blockButton.material = add_block_mat },125);
     }
 });
 
@@ -532,16 +536,15 @@ TouchGestures.onTap(resetButton).subscribe(function(gesture){
     //if(!gravitySignal)
         initWorld();
         resetButton.material = selected_reset_mat;
-        Time.setTimeout(function () {
-            resetButton.material = reset_mat;
-        },
-        125);
+        Time.setTimeout(function(){ resetButton.material = reset_mat },125);
 })
 TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
-
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootCar = false;
+    cannonButton.material = selected_ball_mat;
+    carButton.material = car_mat;
+
     if(carIndex != -1){
         worldObjects.splice(carIndex,1)
         carIndex = -1;
@@ -554,13 +557,17 @@ TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
     else if(canShootSphere){
         canShootSphere = false;
         sphere.hidden = true;
+        cannonButton.material = ball_mat;
+
     }
 });
 TouchGestures.onTap(carButton).subscribe(function (gesture) {
-
+    carButton.material = selected_car_mat;
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootSphere = false;
+    cannonButton.material = ball_mat;
+
     if(sphereIndex != -1){
         worldObjects.splice(sphereIndex,1)
         sphereIndex = -1;
@@ -576,6 +583,7 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
     else if (canShootCar) {
         canShootCar = false;
         carAnimation.hidden = true;
+        carButton.material = car_mat;
     }
 });
 
@@ -598,10 +606,7 @@ TouchGestures.onTap(redButton).subscribe(function(gesture){
         blockMat[numBlock-1] = 0;
         blocks[numBlock-1].child('Cube').material = selectedMats[0];
         redButton.material = selected_red_mat;
-        Time.setTimeout(function () {
-            redButton.material = red_mat;
-        },
-        125);
+        Time.setTimeout(function(){ redButton.material = red_mat },125);
     }
 
 });
@@ -610,10 +615,7 @@ TouchGestures.onTap(blueButton).subscribe(function(gesture){
         blockMat[numBlock-1] = 1;
         blocks[numBlock-1].child('Cube').material = selectedMats[1];
         blueButton.material = selected_blue_mat;
-        Time.setTimeout(function () {
-            blueButton.material = blue_mat;
-        },
-        125);
+        Time.setTimeout(function(){ blueButton.material = blue_mat },125);
     }
 });
 TouchGestures.onTap(greenButton).subscribe(function(gesture){
@@ -621,10 +623,7 @@ TouchGestures.onTap(greenButton).subscribe(function(gesture){
         blockMat[numBlock-1] = 2;
         blocks[numBlock-1].child('Cube').material = selectedMats[2];
         greenButton.material = selected_green_mat;
-        Time.setTimeout(function () {
-            greenButton.material = green_mat;
-        },
-        125);
+        Time.setTimeout(function(){ greenButton.material = green_mat },125);
     }
 });
 TouchGestures.onTap(yellowButton).subscribe(function(gesture){
@@ -632,10 +631,7 @@ TouchGestures.onTap(yellowButton).subscribe(function(gesture){
         blockMat[numBlock-1] = 3;
         blocks[numBlock-1].child('Cube').material = selectedMats[3];
         yellowButton.material = selected_yellow_mat;
-        Time.setTimeout(function () {
-            yellowButton.material = yellow_mat;
-        },
-        125);
+        Time.setTimeout(function(){ yellowButton.material = yellow_mat },125);
     }
 });
 /*
