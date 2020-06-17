@@ -23,6 +23,7 @@ An augmented reality building block game
 - [x] Select and deselect blocks
 - [ ] Edit Block size and distance
 - [x] Add color changes (Random)
+- [] Add shape selection
 
 ### Destruction
 * Cannon Ball
