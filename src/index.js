@@ -49,8 +49,32 @@ const selected_green = Materials.get('Selected_mat_green');
 const selected_yellow = Materials.get('Selected_mat_yellow');
 var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow]
 
+const add_block_mat = Materials.get('mat16')
+const selected_add_block_mat = Materials.get('selected_add_block_mat');
+
+const red_mat = Materials.get('red_button_mat');
+const selected_red_mat = Materials.get('selected_red_mat');
+
+const blue_mat = Materials.get('blue_button_mat');
+const selected_blue_mat = Materials.get('selected_blue_mat');
+
+const green_mat = Materials.get('green_button_mat');
+const selected_green_mat = Materials.get('selected_green_mat');
+
+const yellow_mat = Materials.get('yellow_button_mat');
+const selected_yellow_mat = Materials.get('selected_yellow_mat');
+
 const gravity_mat = Materials.get('gravityBut_mat');
 const gravity_inverse_mat = Materials.get('gravity_inverse_mat');
+
+const reset_mat = Materials.get('floor');
+const selected_reset_mat = Materials.get('selected_reset_mat');
+
+const car_mat = Materials.get('car_button_mat');
+const selected_car_mat = Materials.get('selected_car_mat');
+
+const ball_mat = Materials.get('ball_button_mat');
+const selected_ball_mat = Materials.get('selected_ball_mat');
 
 const car = planeTracker.child("car");
 const carButton = camera.child('carButton');
@@ -454,13 +478,21 @@ function moveBlock(bid){
 }
 
 
+
+
 TouchGestures.onPan().subscribe(function (gesture) {
     moveBlock(numBlock- 1);
     setupCarPos();
 });
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
-    if(!gravitySignal)
+    if(!gravitySignal) {
         makeBlock();
+        blockButton.material = selected_add_block_mat;
+        Time.setTimeout(function () {
+            blockButton.material = add_block_mat;
+        },
+        125);
+    }
 });
 
 TouchGestures.onTap(gravityButton).subscribe(function(e) {
@@ -470,7 +502,6 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
             carButton.hidden = false;
             updatePhysicsObjects();
             gravitySignal = true;
-            gravityButton.material = gravity_inverse_mat;
         }
         else {
             cannonButton.hidden = true;
@@ -500,6 +531,11 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
 TouchGestures.onTap(resetButton).subscribe(function(gesture){
     //if(!gravitySignal)
         initWorld();
+        resetButton.material = selected_reset_mat;
+        Time.setTimeout(function () {
+            resetButton.material = reset_mat;
+        },
+        125);
 })
 TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
 
@@ -561,6 +597,11 @@ TouchGestures.onTap(redButton).subscribe(function(gesture){
     if(numBlock != 0){
         blockMat[numBlock-1] = 0;
         blocks[numBlock-1].child('Cube').material = selectedMats[0];
+        redButton.material = selected_red_mat;
+        Time.setTimeout(function () {
+            redButton.material = red_mat;
+        },
+        125);
     }
 
 });
@@ -568,18 +609,33 @@ TouchGestures.onTap(blueButton).subscribe(function(gesture){
     if(numBlock != 0){
         blockMat[numBlock-1] = 1;
         blocks[numBlock-1].child('Cube').material = selectedMats[1];
+        blueButton.material = selected_blue_mat;
+        Time.setTimeout(function () {
+            blueButton.material = blue_mat;
+        },
+        125);
     }
 });
 TouchGestures.onTap(greenButton).subscribe(function(gesture){
     if(numBlock != 0){
         blockMat[numBlock-1] = 2;
         blocks[numBlock-1].child('Cube').material = selectedMats[2];
+        greenButton.material = selected_green_mat;
+        Time.setTimeout(function () {
+            greenButton.material = green_mat;
+        },
+        125);
     }
 });
 TouchGestures.onTap(yellowButton).subscribe(function(gesture){
     if(numBlock != 0){
         blockMat[numBlock-1] = 3;
         blocks[numBlock-1].child('Cube').material = selectedMats[3];
+        yellowButton.material = selected_yellow_mat;
+        Time.setTimeout(function () {
+            yellowButton.material = yellow_mat;
+        },
+        125);
     }
 });
 /*
