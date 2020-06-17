@@ -346,6 +346,11 @@ function initCar(carpos) {
 
 function setupCar() {
 
+    carAnim.hidden = false;
+    car.transform.x = Reactive.val(0);
+    car.transform.y = Reactive.val(0);
+    car.transform.z = Reactive.val(0);
+
 
 
     if (carIndex != -1) {
@@ -401,7 +406,7 @@ function changeMat(bid){
                 blueButton.hidden = false;
                 greenButton.hidden = false;
                 yellowButton.hidden = false;
-                
+
                 numBlock = bid;
                 block.material = selectedMats[blockMat[bid-1]];
                 Patches.setScalarValue('numBlock', numBlock)
@@ -491,14 +496,12 @@ TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
     }
 });
 TouchGestures.onTap(carButton).subscribe(function (gesture) {
-    carAnim.hidden = false;
-    Diagnostics.log("POOOOOPPPOOOOO")
     if (gravity && !canShootCar)
         setupCar();
 
     else if (canShootCar) {
         canShootCar = false;
-        //sphere.hidden = true;
+        carAnim.hidden = true;
     }
 });
 
@@ -508,10 +511,10 @@ TouchGestures.onTap().subscribe(function (gesture){
     else if(sphereIndex != -1){
         setupSphere();
     }
-    if (canShootCar)
+    else if (canShootCar)
         fireCar();
     else if (carIndex != -1) {
-        //setupSphere();
+        setupCar();
     }
 });
 
