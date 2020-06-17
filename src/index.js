@@ -23,7 +23,12 @@ const camera = root.child('Device').child('Camera');
 const blockButton = camera.child('blockButton');
 const gravityButton = camera.child('gravityButton');
 const resetButton = camera.child('resetButton');
-const cannonButton = camera.child('cannonButton')
+const cannonButton = camera.child('cannonButton');
+const redButton = camera.child('redButton')
+const blueButton = camera.child('blueButton')
+const greenButton = camera.child('greenButton')
+const yellowButton = camera.child('yellowButton')
+
 const deviceWorldTransform = DeviceMotion.worldTransform;
 
 const block_red = Materials.get('Block_mat_red');
@@ -31,6 +36,12 @@ const block_blue = Materials.get('Block_mat_blue');
 const block_green = Materials.get('Block_mat_green');
 const block_yellow = Materials.get('Block_mat_yellow');
 var mats = [block_red, block_blue, block_green, block_yellow]
+
+const selected_red = Materials.get('Selected_mat_red');
+const selected_blue = Materials.get('Selected_mat_blue');
+const selected_green = Materials.get('Selected_mat_green');
+const selected_yellow = Materials.get('Selected_mat_yellow');
+var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow]
 
 
 
@@ -303,10 +314,10 @@ function fireSphere() {
 
 function changeMat(bid){
     if(!gravity){
-        Promise.all([
+        /*Promise.all([
             Materials.findFirst('Cube_mat'),
             Materials.findFirst('SelectedBlock_mat'),
-        ]).then(function(results){
+        ]).then(function(results){*/
             var block = blocks[bid-1].child('Cube');
             if(numBlock == bid){
                 numBlock = 0;
@@ -319,12 +330,16 @@ function changeMat(bid){
                     blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock-1]];
                 }
                 numBlock = bid;
-                block.material = results[1];
+                block.material = selectedMats[blockMat[bid-1]];
                 Patches.setScalarValue('numBlock', numBlock)
             }
-        })
+        //})
     }
 }
+var NewXPos;
+var NewYPos;
+var NewZPos;
+var yRot = deviceWorldTransform.rotationY;
 
 function moveBlock(bid){
     for(var i = 0; i < blocks.length; i++){
@@ -336,15 +351,17 @@ function moveBlock(bid){
 
 
       // Get the angle of the camera
-            var yRot = deviceWorldTransform.rotationY;
 
-            var NewXPos = Reactive.add(lastCamX,Reactive.mul(Reactive.cos(yRot),touchPos.x));
-            var NewYPos = Reactive.add(lastCamY,Reactive.mul(touchPos.y,-1));
-            var NewZPos = Reactive.add(lastCamZ,Reactive.mul(Reactive.mul(Reactive.sin(yRot),touchPos.x),-1));
+            var NewXPos = Reactive.add(blockPos[bid].x,Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x));
+            var NewYPos = Reactive.add(blockPos[bid].y,Reactive.mul(touchPos.y,-1));
+            var NewZPos = Reactive.add(blockPos[bid].z,Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x));
 
             blockTransform.x = NewXPos;
             blockTransform.y = NewYPos;
             blockTransform.z = NewZPos;
+
+            blockPos[bid] = new CANNON.Vec3(NewXPos.lastValue,NewYPos.lastValue,NewZPos.lastValue)
+            updatePhysicsObjects();
 
       //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
     }
@@ -402,6 +419,32 @@ TouchGestures.onTap().subscribe(function (gesture){
         fireSphere();
     else if(sphereIndex != -1){
         setupSphere();
+    }
+});
+
+TouchGestures.onTap(redButton).subscribe(function(gesture){
+    if(numBlock != 0){
+        blockMat[numBlock-1] = 0;
+        blocks[numBlock-1].child('Cube').material = selectedMats[0];
+    }
+
+});
+TouchGestures.onTap(blueButton).subscribe(function(gesture){
+    if(numBlock != 0){
+        blockMat[numBlock-1] = 1;
+        blocks[numBlock-1].child('Cube').material = selectedMats[1];
+    }
+});
+TouchGestures.onTap(greenButton).subscribe(function(gesture){
+    if(numBlock != 0){
+        blockMat[numBlock-1] = 2;
+        blocks[numBlock-1].child('Cube').material = selectedMats[2];
+    }
+});
+TouchGestures.onTap(yellowButton).subscribe(function(gesture){
+    if(numBlock != 0){
+        blockMat[numBlock-1] = 3;
+        blocks[numBlock-1].child('Cube').material = selectedMats[3];
     }
 });
 /*
