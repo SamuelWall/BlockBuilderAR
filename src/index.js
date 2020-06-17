@@ -179,6 +179,7 @@ function initWorld(){     //resets world objects and makes them all hidden
     worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
     canShootSphere = false;
     sphere.hidden = true;
+    carAnimation.hidden = true;
     sphereIndex = -1;
     blockPos = [];
     blockMat = [];
