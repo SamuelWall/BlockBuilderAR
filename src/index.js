@@ -90,12 +90,12 @@ const sphere = planeTracker.child('Sphere')
 //const sphere2 = planeTracker.child('Sphere0')
 sphere.hidden = true;
 
-var cameraPosX = deviceWorldTransform.x; //may not work
-var cameraPosY = deviceWorldTransform.y;
-var cameraPosZ = deviceWorldTransform.z;
-var newBlockX = deviceWorldTransform.position.x;
-var newBlockY = deviceWorldTransform.position.y;
-var newBlockZ = deviceWorldTransform.position.z;
+//var cameraPosX = deviceWorldTransform.x; //may not work
+//var cameraPosY = deviceWorldTransform.y;
+//var cameraPosZ = deviceWorldTransform.z;
+var devicePosX = deviceWorldTransform.position.x;
+var devicePosY = deviceWorldTransform.position.y;
+var devicePosZ = deviceWorldTransform.position.z;
 //device rotation
 var camRotX = deviceWorldTransform.rotationX;
 var camRotY = deviceWorldTransform.rotationY;
@@ -115,14 +115,14 @@ function setupSphereRot(){
     var spherePosZ = Reactive.mul(Reactive.mul(sphereDistance, Reactive.cos(camRotY)),Reactive.cos(camRotX));
 
     // adjusting for difference in coordinates
-    var resetZ = Reactive.mul(100,Reactive.add(1.7, newBlockZ));
+    var resetZ = Reactive.mul(100,Reactive.add(1.7, devicePosZ));
     // orbit position + offset from device position if z > 1
     /*var newSpherePosX = Reactive.add(Reactive.neg(spherePosX), cameraPosX);
     var newSpherePosY = Reactive.add(spherePosY, cameraPosY);
     //if z > 0
     var newSpherePosZ = Reactive.add(Reactive.neg(spherePosZ), resetZ);*/
-    var newSpherePosX = Reactive.add(Reactive.neg(Reactive.mul(spherePosX,100)), Reactive.mul(100,newBlockX));
-    var newSpherePosY = Reactive.add(Reactive.mul(spherePosY,100), Reactive.mul(100,Reactive.add(newBlockY, .5)));
+    var newSpherePosX = Reactive.add(Reactive.neg(Reactive.mul(spherePosX,100)), Reactive.mul(100,devicePosX));
+    var newSpherePosY = Reactive.add(Reactive.mul(spherePosY,100), Reactive.mul(100,Reactive.add(devicePosY, .5)));
     //if z > 0
     var newSpherePosZ = Reactive.add(Reactive.add(Reactive.neg(Reactive.mul(spherePosZ,100)), resetZ), -40);
     //if z = 0
@@ -225,7 +225,7 @@ function initWorld(){     //resets world objects and makes them all hidden
 function updatePhysicsObjects(cutOff = 0){    //Updates the positions of the block physics objects (hitboxes)
     for (var b = 0; b < blockPos.length-cutOff; b++){
         var block = blocks[b];
-        blockPos[b] = new CANNON.Vec3(block.transform.x.pinLastValue(), block.transform.y.pinLastValue(), block.transform.z.pinLastValue())
+        blockPos[b] = new CANNON.Vec3(block.transform.x.lastValue, block.transform.y.lastValue, block.transform.z.lastValue)
         worldObjects[b+1].physicsObject = initBlock(blockPos[b])
 
         cannonHelper = new CannonHelper(worldObjects)
@@ -253,9 +253,9 @@ function initBlock(position) {  //returns a physics object of a block at a passe
 
   return blockBody;
 }
-var lastCamX;
-var lastCamY;
-var lastCamZ;
+var newBlockPosX;
+var newBlockPosY;
+var newBlockPosZ;
 //var lastCamRotX;
 var lastCamRotY;
 var lastCamRotZ;
@@ -268,12 +268,12 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         lastCamRotY = camRotY.lastValue
         lastCamRotZ = camRotZ.lastValue
         var pseudoRadius = 150;
-        var offsetX = (newBlockX.lastValue/2) * 100;
-        lastCamX = (-pseudoRadius*Math.sin(lastCamRotY)+(newBlockX.lastValue*pseudoRadius)) - offsetX;
-        lastCamY = (newBlockY.lastValue*pseudoRadius) + 10;
+        var offsetX = (devicePosX.lastValue/2) * 100;
+        newBlockPosX = (-pseudoRadius*Math.sin(lastCamRotY)+(devicePosX.lastValue*pseudoRadius)) - offsetX;
+        newBlockPosY = (devicePosY.lastValue*pseudoRadius) + 10;
         var neg = 1
-        var objectWorldPosZ = newBlockZ.lastValue + 1.5;
-        var offsetZ = pseudoRadius - (newBlockZ.lastValue / 2)*150 ;
+        var objectWorldPosZ = devicePosZ.lastValue + 1.5;
+        var offsetZ = pseudoRadius - (devicePosZ.lastValue / 2)*150 ;
         var latterOffset = 0
         if(Math.abs(lastCamRotZ) > Math.PI / 2) {
             neg = -1;
@@ -286,19 +286,19 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         }
 
 
-        lastCamZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(newBlockZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
+        newBlockPosZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(devicePosZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
 
-        //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*lastCamX), lastCamY + 10, (Math.cos(lastCamRotY)*lastCamY));
+        //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*newBlockPosX), newBlockPosY + 10, (Math.cos(lastCamRotY)*newBlockPosY));
 
-        var Npos = new CANNON.Vec3(lastCamX, lastCamY, lastCamZ);
+        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ);
         /*
         lastCamRotY = camRotY.lastValue
         lastCamRotZ = camRotZ.lastValue
 
-        lastCamX = ((Math.sin(lastCamRotY)+ newBlockX.lastValue) * -1.5 + 2*newBlockX.lastValue + (newBlockX.lastValue * .5))*100
-        lastCamY = newBlockY.lastValue * 100;
+        newBlockPosX = ((Math.sin(lastCamRotY)+ devicePosX.lastValue) * -1.5 + 2*devicePosX.lastValue + (devicePosX.lastValue * .5))*100
+        newBlockPosY = devicePosY.lastValue * 100;
         var neg = 1
-        var objectWorldPosZ = (newBlockZ.lastValue + 0) * 1;
+        var objectWorldPosZ = (devicePosZ.lastValue + 0) * 1;
 
         var latterOffset = 0
         if(Math.abs(lastCamRotZ) > Math.PI / 2) {
@@ -308,9 +308,9 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
 
 
         }
-        lastCamZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
+        newBlockPosZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
 
-        var Npos = new CANNON.Vec3(lastCamX, lastCamY, lastCamZ); */
+        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ); */
         blockPos.push(Npos)                              //calculate position of new block and add to positions array
 
         var matIndex = Math.floor(Random.random() * mats.length);
@@ -464,23 +464,24 @@ function moveBlock(bid){
             const blockTransform = block.transform;
 
             var touchPos = Patches.getVectorValue('patchPosition'+(i+1));
-
+            //blockPos[bid] = new CANNON.Vec3(blockTransform.x.lastValue,blockTransform.y.lastValue,blockTransform.z.lastValuee)
 
       // Get the angle of the camera                                                         |
             // Try subtracting touch pos by a stored lastValue of touch pos in this version \/
-            /*var NewXPos = Reactive.add(blockPos[bid].x,Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x));
-            var NewYPos = Reactive.add(blockPos[bid].y,Reactive.mul(touchPos.y,-1));
-            var NewZPos = Reactive.add(blockPos[bid].z,Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x));
-            */
+            var NewXPos = Reactive.add(newBlockPosX,Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x));
+            var NewYPos = Reactive.add(newBlockPosY,Reactive.mul(touchPos.y,-1));
+            var NewZPos = Reactive.add(newBlockPosZ,Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x));
+
+            /*
             var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
             var NewYPos = Reactive.mul(touchPos.y,-1);
             var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
-
+            */
             blockTransform.x = NewXPos;
             blockTransform.y = NewYPos;
             blockTransform.z = NewZPos;
 
-            blockPos[bid] = new CANNON.Vec3(NewXPos.lastValue,NewYPos.lastValue,NewZPos.lastValue)
+
             updatePhysicsObjects();
 
       //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
@@ -540,10 +541,14 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
 })
 TouchGestures.onTap(resetButton).subscribe(function(gesture){
     //if(!gravitySignal)
-        initWorld();
+    //    initWorld();
         resetButton.material = selected_reset_mat;
         Time.setTimeout(function(){ resetButton.material = reset_mat },125);
+
+    updatePhysicsObjects();
+
 })
+
 TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
     sphere.hidden = true;
     carAnimation.hidden = true;
