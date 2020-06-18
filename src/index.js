@@ -466,11 +466,15 @@ function moveBlock(bid){
             var touchPos = Patches.getVectorValue('patchPosition'+(i+1));
 
 
-      // Get the angle of the camera
-
-            var NewXPos = Reactive.add(blockPos[bid].x,Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x));
+      // Get the angle of the camera                                                         |
+            // Try subtracting touch pos by a stored lastValue of touch pos in this version \/
+            /*var NewXPos = Reactive.add(blockPos[bid].x,Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x));
             var NewYPos = Reactive.add(blockPos[bid].y,Reactive.mul(touchPos.y,-1));
             var NewZPos = Reactive.add(blockPos[bid].z,Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x));
+            */
+            var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
+            var NewYPos = Reactive.mul(touchPos.y,-1);
+            var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
 
             blockTransform.x = NewXPos;
             blockTransform.y = NewYPos;
@@ -496,6 +500,7 @@ TouchGestures.onTap(blockButton).subscribe(function (gesture) {
         makeBlock();
         blockButton.material = selected_add_block_mat;
         Time.setTimeout(function(){ blockButton.material = add_block_mat },125);
+        //updatePhysicsObjects();
     }
 });
 
