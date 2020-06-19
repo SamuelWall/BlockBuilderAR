@@ -158,6 +158,8 @@ import CANNON from 'cannon'
 import CannonHelper from 'spark-ar-physics'
 Instruction.bind(CameraInfo.captureDevicePosition.eq(CameraInfo.CameraPosition.FRONT), 'flip_camera')
 
+var posObject = camera.child('positionObject')
+var planeTrackObj = planeTracker.child('planePos')
 var floorPlane = planeTracker.child('plane0')
 var block1 = planeTracker.child('Block1')
 var block2 = planeTracker.child('Block2')
@@ -416,6 +418,7 @@ function fireCar() {
 }
 
 
+
 function changeMat(bid){
     if(!gravity){
         /*Promise.all([
@@ -435,6 +438,17 @@ function changeMat(bid){
                 //block.material = results[0];
                 block.material = mats[blockMat[bid-1]]
                 Patches.setScalarValue('numBlock', numBlock)
+
+                Diagnostics.log("AFEHEIWUF")
+                //block.worldTransform.position = posObject.worldTransform.position
+                //Diagnostics.watch("SHIT: ", block.worldTransform.position.x.pinLastValue())
+                block.worldTransform.position.x = Reactive.val(0);
+                block.worldTransform.position.y = Reactive.val(0);
+                block.worldTransform.position.z = Reactive.val(0);
+
+
+
+
             }
             else  {
                 if(numBlock != 0){
@@ -444,6 +458,30 @@ function changeMat(bid){
                 blueButton.hidden = false;
                 greenButton.hidden = false;
                 yellowButton.hidden = false;
+
+
+                /*block.transform.x = Reactive.div(
+                    Reactive.sub(
+                        Reactive.mul(posObject.worldTransform.x,1),
+                        Reactive.mul(planeTrackObj.worldTransform.x,1)
+                    )
+                ,1);
+                block.transform.y = Reactive.div(
+                    Reactive.sub(
+                        Reactive.mul(posObject.worldTransform.y,1),
+                        Reactive.mul(planeTrackObj.worldTransform.y,1)
+                    )
+                ,1);
+                block.transform.z = Reactive.div(
+                    Reactive.sub(
+                        Reactive.mul(posObject.worldTransform.z,1),
+                        Reactive.mul(planeTrackObj.worldTransform.z,1)
+                    )
+                ,1);*/
+                block.worldTransform.position = posObject.worldTransform.position;
+                Diagnostics.watch("X: ",block.transform.x)
+                Diagnostics.watch("Y: ",block.transform.y)
+                Diagnostics.watch("Z: ",block.transform.z)
 
                 numBlock = bid;
                 block.material = selectedMats[blockMat[bid-1]];
@@ -492,10 +530,10 @@ function moveBlock(bid){
 
 
 
-TouchGestures.onPan().subscribe(function (gesture) {
+/*TouchGestures.onPan().subscribe(function (gesture) {
     moveBlock(numBlock- 1);
     setupCarPos();
-});
+});*/
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if(!gravitySignal) {
         makeBlock();
