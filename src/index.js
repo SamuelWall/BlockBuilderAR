@@ -101,7 +101,7 @@ var camRotX = deviceWorldTransform.rotationX;
 var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 
-function setupSphereRot(){
+/*function setupSphereRot(){
     //projectile transform
 
     var sphereDistance = 1;
@@ -117,10 +117,10 @@ function setupSphereRot(){
     // adjusting for difference in coordinates
     var resetZ = Reactive.mul(100,Reactive.add(1.7, devicePosZ));
     // orbit position + offset from device position if z > 1
-    /*var newSpherePosX = Reactive.add(Reactive.neg(spherePosX), cameraPosX);
-    var newSpherePosY = Reactive.add(spherePosY, cameraPosY);
+    //var newSpherePosX = Reactive.add(Reactive.neg(spherePosX), cameraPosX);
+    //var newSpherePosY = Reactive.add(spherePosY, cameraPosY);
     //if z > 0
-    var newSpherePosZ = Reactive.add(Reactive.neg(spherePosZ), resetZ);*/
+    //var newSpherePosZ = Reactive.add(Reactive.neg(spherePosZ), resetZ);
     var newSpherePosX = Reactive.add(Reactive.neg(Reactive.mul(spherePosX,100)), Reactive.mul(100,devicePosX));
     var newSpherePosY = Reactive.add(Reactive.mul(spherePosY,100), Reactive.mul(100,Reactive.add(devicePosY, .5)));
     //if z > 0
@@ -132,9 +132,9 @@ function setupSphereRot(){
     sphere.transform.x = newSpherePosX//.mul(100);
     sphere.transform.y = newSpherePosY//.mul(100);
     sphere.transform.z = newSpherePosZ//.mul(100);
-}
+}*/
 var canShootSphere = false;
-setupSphereRot();
+//setupSphereRot();
 
 function setupCarPos() {
 
@@ -340,15 +340,18 @@ function initSphere(pos) {
     })
     return sphereBody;
 }
+function setupSphereRot(){
+    sphere.worldTransform.position = posObject.worldTransform.position;
+}
 function setupSphere(){
     sphere.hidden = false;
 
     cannonButton.material = selected_ball_mat;
-
+    setupSphereRot();
     if(sphereIndex != -1){
         worldObjects.splice(sphereIndex, 1);
         sphereIndex = -1;
-        setupSphereRot();
+        //setupSphereRot();
     }
 
     canShootSphere = true;
@@ -439,15 +442,12 @@ function changeMat(bid){
                 block.material = mats[blockMat[bid-1]]
                 Patches.setScalarValue('numBlock', numBlock)
 
-                Diagnostics.log("AFEHEIWUF")
                 //block.worldTransform.position = posObject.worldTransform.position
                 //Diagnostics.watch("SHIT: ", block.worldTransform.position.x.pinLastValue())
-                block.worldTransform.position.x = Reactive.val(0);
-                block.worldTransform.position.y = Reactive.val(0);
-                block.worldTransform.position.z = Reactive.val(0);
-
-
-
+                //block.transform.x = block.transform.x.pinLastValue()
+                //block.transform.y = block.transform.y.pinLastValue()
+                //block.transform.z = block.transform.z.pinLastValue()
+                //updatePhysicsObjects();
 
             }
             else  {
@@ -478,10 +478,14 @@ function changeMat(bid){
                         Reactive.mul(planeTrackObj.worldTransform.z,1)
                     )
                 ,1);*/
-                block.worldTransform.position = posObject.worldTransform.position;
+                /*block.worldTransform.position = posObject.worldTransform.position;
                 Diagnostics.watch("X: ",block.transform.x)
                 Diagnostics.watch("Y: ",block.transform.y)
                 Diagnostics.watch("Z: ",block.transform.z)
+                Diagnostics.watch("wX: ",block.worldTransform.x)
+                Diagnostics.watch("wY: ",block.worldTransform.y)
+                Diagnostics.watch("wZ: ",block.worldTransform.z)*/
+
 
                 numBlock = bid;
                 block.material = selectedMats[blockMat[bid-1]];
@@ -530,10 +534,10 @@ function moveBlock(bid){
 
 
 
-/*TouchGestures.onPan().subscribe(function (gesture) {
+TouchGestures.onPan().subscribe(function (gesture) {
     moveBlock(numBlock- 1);
     setupCarPos();
-});*/
+});
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if(!gravitySignal) {
         makeBlock();
@@ -578,12 +582,12 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
 
 })
 TouchGestures.onTap(resetButton).subscribe(function(gesture){
-    //if(!gravitySignal)
-    //    initWorld();
-        resetButton.material = selected_reset_mat;
-        Time.setTimeout(function(){ resetButton.material = reset_mat },125);
+    if(!gravitySignal)
+        initWorld();
+    resetButton.material = selected_reset_mat;
+    Time.setTimeout(function(){ resetButton.material = reset_mat },125);
 
-    updatePhysicsObjects();
+
 
 })
 
