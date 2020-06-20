@@ -18,16 +18,18 @@ const fd = Scene.root
   .child('Camera')
   .child('Focal Distance')
 
+var canvas = fd.child('canvas0')
 const planeTracker = root.child('planeTracker0')
 const camera = root.child('Device').child('Camera');
-const blockButton = camera.child('blockButton');
-const gravityButton = camera.child('gravityButton');
-const resetButton = camera.child('resetButton');
-const cannonButton = camera.child('cannonButton');
-const redButton = camera.child('redButton')
-const blueButton = camera.child('blueButton')
-const greenButton = camera.child('greenButton')
-const yellowButton = camera.child('yellowButton')
+const blockButton = canvas.child('blockButton');
+const gravityButton = canvas.child('gravityButton');
+const resetButton = canvas.child('resetButton');
+const cannonButton = canvas.child('cannonButton');
+const redButton = canvas.child('redButton')
+const blueButton = canvas.child('blueButton')
+const greenButton = canvas.child('greenButton')
+const yellowButton = canvas.child('yellowButton')
+const carButton = canvas.child('carButton');
 
 redButton.hidden = true;
 blueButton.hidden = true;
@@ -77,7 +79,7 @@ const ball_mat = Materials.get('ball_button_mat');
 const selected_ball_mat = Materials.get('selected_ball_mat');
 
 const car = planeTracker.child("car");
-const carButton = camera.child('carButton');
+
 const carAnimation = planeTracker.child('carAnimation');
 carButton.hidden = true;
 
@@ -101,6 +103,8 @@ var camRotX = deviceWorldTransform.rotationX;
 var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 
+var pointSig = Patches.getPointValue('zeroPointSignal')
+Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
 /*function setupSphereRot(){
     //projectile transform
 
