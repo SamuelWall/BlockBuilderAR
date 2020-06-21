@@ -104,7 +104,7 @@ var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 
 var pointSig = Patches.getPointValue('zeroPointSignal')
-Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
+//Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
 /*function setupSphereRot(){
     //projectile transform
 
@@ -185,7 +185,7 @@ var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, bl
 var newestIndex = 0;
 var blockPos = [];
 var blockMat = [];
-
+var blockWT = [];
 //var touchPos = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
 
 var numBlock = 0;
@@ -239,6 +239,8 @@ function initWorld(){     //resets world objects and makes them all hidden
 function updatePhysicsObjects(cutOff = 0){    //Updates the positions of the block physics objects (hitboxes)
     for (var b = 0; b < blockPos.length-cutOff; b++){
         var block = blocks[b];
+
+
         blockPos[b] = new CANNON.Vec3(block.transform.x.lastValue, block.transform.y.lastValue, block.transform.z.lastValue)
         worldObjects[b+1].physicsObject = initBlock(blockPos[b])
 
@@ -279,7 +281,7 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
     if(newestIndex < 15){
         var sceneBlock = blocks[newestIndex];
 
-        lastCamRotY = camRotY.lastValue
+        /*lastCamRotY = camRotY.lastValue
         lastCamRotZ = camRotZ.lastValue
         var pseudoRadius = 150;
         var offsetX = (devicePosX.lastValue/2) * 100;
@@ -293,10 +295,10 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
             neg = -1;
             latterOffset = 2 * objectWorldPosZ * 100;
             //offsetZ = 20;
-            /*if (cameraPosZ.lastValue < 0) {
-                neg = 1;
-            }
-            */
+            //if (cameraPosZ.lastValue < 0) {
+            //    neg = 1;
+            //}
+
         }
 
 
@@ -304,7 +306,7 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
 
         //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*newBlockPosX), newBlockPosY + 10, (Math.cos(lastCamRotY)*newBlockPosY));
 
-        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ);
+        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ);*/
         /*
         lastCamRotY = camRotY.lastValue
         lastCamRotZ = camRotZ.lastValue
@@ -325,8 +327,18 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         newBlockPosZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
 
         var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ); */
-        blockPos.push(Npos)                              //calculate position of new block and add to positions array
+        var Npos = new CANNON.Vec3(
+            posObject.worldTransform.position.x.lastValue,
+            posObject.worldTransform.position.y.lastValue,
+            posObject.worldTransform.position.z.lastValue
+        )
+        /*sceneBlock.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
+        sceneBlock.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
+        sceneBlock.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)*/
 
+        Diagnostics.log(posObject.worldTransform.position.x.lastValue)
+        blockPos.push(Npos)                              //calculate position of new block and add to positions array
+        //blockWT.push(sceneBlock.child('Cube').worldTransform.position)
         var matIndex = Math.floor(Random.random() * mats.length);
         blockMat.push(matIndex)
 
@@ -334,12 +346,13 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         worldObjects.push({sceneObject: sceneBlock, physicsObject: initBlock(Npos)});    //add it to world objects
         changeMat(newestIndex+1);     //make the new block selected
 
-        updatePhysicsObjects(1);      // update physics hitboxes for all blocks
+
+        //updatePhysicsObjects(1);      // update physics hitboxes for all blocks
         sceneBlock.hidden = false;   //make visible
         newestIndex++;
-        gravity = true;
+        //gravity = true;
 
-        cannonHelper = new CannonHelper(worldObjects);   //reset cannonhelper with new world objects
+        //cannonHelper = new CannonHelper(worldObjects);   //reset cannonhelper with new world objects
 
     }
 }
@@ -440,7 +453,9 @@ function changeMat(bid){
             Materials.findFirst('Cube_mat'),
             Materials.findFirst('SelectedBlock_mat'),
         ]).then(function(results){*/
-            var block = blocks[bid-1].child('Cube');
+            var block = blocks[bid-1];
+            var blockMesh = block.child('Cube')
+            //var nObj = blocks[bid-1].child('nullObject0')
             if(numBlock == bid){
                 numBlock = 0;
 
@@ -451,18 +466,20 @@ function changeMat(bid){
 
 
                 //block.material = results[0];
-                block.material = mats[blockMat[bid-1]]
+                blockMesh.material = mats[blockMat[bid-1]]
                 Patches.setScalarValue('numBlock', numBlock)
 
+                //block.worldTransform.position = nObj.worldTransform.position
                 //block.worldTransform.position = posObject.worldTransform.position
                 //Diagnostics.watch("SHIT: ", block.worldTransform.position.x.pinLastValue())
-                //block.transform.x = block.transform.x.pinLastValue()
-                //block.transform.y = block.transform.y.pinLastValue()
-                //block.transform.z = block.transform.z.pinLastValue()
+                block.transform.x = block.transform.x.pinLastValue()
+                block.transform.y = block.transform.y.pinLastValue()
+                block.transform.z = block.transform.z.pinLastValue()
                 //updatePhysicsObjects();
 
             }
             else  {
+
                 if(numBlock != 0){
                     blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock-1]];
                 }
@@ -490,8 +507,12 @@ function changeMat(bid){
                         Reactive.mul(planeTrackObj.worldTransform.z,1)
                     )
                 ,1);*/
-                /*block.worldTransform.position = posObject.worldTransform.position;
-                Diagnostics.watch("X: ",block.transform.x)
+                Diagnostics.watch("Obj X: ",posObject.worldTransform.position.x)
+                Diagnostics.watch("Pln X: ",planeTrackObj.worldTransform.position.x)
+                block.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
+                block.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
+                block.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
+                /*Diagnostics.watch("X: ",block.transform.x)
                 Diagnostics.watch("Y: ",block.transform.y)
                 Diagnostics.watch("Z: ",block.transform.z)
                 Diagnostics.watch("wX: ",block.worldTransform.x)
@@ -500,7 +521,7 @@ function changeMat(bid){
 
 
                 numBlock = bid;
-                block.material = selectedMats[blockMat[bid-1]];
+                blockMesh.material = selectedMats[blockMat[bid-1]];
                 Patches.setScalarValue('numBlock', numBlock)
             }
         //})
@@ -546,10 +567,10 @@ function moveBlock(bid){
 
 
 
-TouchGestures.onPan().subscribe(function (gesture) {
+/*TouchGestures.onPan().subscribe(function (gesture) {
     moveBlock(numBlock- 1);
     setupCarPos();
-});
+});*/
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if(!gravitySignal) {
         makeBlock();
