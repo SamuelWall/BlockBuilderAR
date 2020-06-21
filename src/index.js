@@ -163,6 +163,7 @@ import CannonHelper from 'spark-ar-physics'
 Instruction.bind(CameraInfo.captureDevicePosition.eq(CameraInfo.CameraPosition.FRONT), 'flip_camera')
 
 var posObject = camera.child('positionObject')
+var blockPosObj = camera.child('blockPositionObject')
 var planeTrackObj = planeTracker.child('planePos')
 var floorPlane = planeTracker.child('plane0')
 var block1 = planeTracker.child('Block1')
@@ -327,16 +328,11 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         newBlockPosZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
 
         var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ); */
-        var Npos = new CANNON.Vec3(
-            posObject.worldTransform.position.x.lastValue,
-            posObject.worldTransform.position.y.lastValue,
-            posObject.worldTransform.position.z.lastValue
-        )
+        var Npos = new CANNON.Vec3(0,0,0)
         /*sceneBlock.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
         sceneBlock.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
         sceneBlock.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)*/
 
-        Diagnostics.log(posObject.worldTransform.position.x.lastValue)
         blockPos.push(Npos)                              //calculate position of new block and add to positions array
         //blockWT.push(sceneBlock.child('Cube').worldTransform.position)
         var matIndex = Math.floor(Random.random() * mats.length);
@@ -470,7 +466,6 @@ function changeMat(bid){
                 Patches.setScalarValue('numBlock', numBlock)
 
                 //block.worldTransform.position = nObj.worldTransform.position
-                //block.worldTransform.position = posObject.worldTransform.position
                 //Diagnostics.watch("SHIT: ", block.worldTransform.position.x.pinLastValue())
                 block.transform.x = block.transform.x.pinLastValue()
                 block.transform.y = block.transform.y.pinLastValue()
@@ -482,6 +477,9 @@ function changeMat(bid){
 
                 if(numBlock != 0){
                     blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock-1]];
+                    blocks[numBlock - 1].transform.x = blocks[numBlock - 1].transform.x.pinLastValue()
+                    blocks[numBlock - 1].transform.y = blocks[numBlock - 1].transform.y.pinLastValue()
+                    blocks[numBlock - 1].transform.z = blocks[numBlock - 1].transform.z.pinLastValue()
                 }
                 redButton.hidden = false;
                 blueButton.hidden = false;
@@ -489,29 +487,10 @@ function changeMat(bid){
                 yellowButton.hidden = false;
 
 
-                /*block.transform.x = Reactive.div(
-                    Reactive.sub(
-                        Reactive.mul(posObject.worldTransform.x,1),
-                        Reactive.mul(planeTrackObj.worldTransform.x,1)
-                    )
-                ,1);
-                block.transform.y = Reactive.div(
-                    Reactive.sub(
-                        Reactive.mul(posObject.worldTransform.y,1),
-                        Reactive.mul(planeTrackObj.worldTransform.y,1)
-                    )
-                ,1);
-                block.transform.z = Reactive.div(
-                    Reactive.sub(
-                        Reactive.mul(posObject.worldTransform.z,1),
-                        Reactive.mul(planeTrackObj.worldTransform.z,1)
-                    )
-                ,1);*/
-                Diagnostics.watch("Obj X: ",posObject.worldTransform.position.x)
-                Diagnostics.watch("Pln X: ",planeTrackObj.worldTransform.position.x)
-                block.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
-                block.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
-                block.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
+
+                block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
+                block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
+                block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
                 /*Diagnostics.watch("X: ",block.transform.x)
                 Diagnostics.watch("Y: ",block.transform.y)
                 Diagnostics.watch("Z: ",block.transform.z)
