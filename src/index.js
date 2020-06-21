@@ -24,7 +24,7 @@ const camera = root.child('Device').child('Camera');
 const blockButton = canvas.child('blockButton');
 const gravityButton = canvas.child('gravityButton');
 const resetButton = canvas.child('resetButton');
-const cannonButton = canvas.child('cannonButton');
+const ballButton = canvas.child('ballButton');
 const redButton = canvas.child('redButton')
 const blueButton = canvas.child('blueButton')
 const greenButton = canvas.child('greenButton')
@@ -207,21 +207,29 @@ function initWorld(){     //resets world objects and makes them all hidden
     gravitySignal = false;
     gravity = true;
 
+    gravityButton.material = gravity_mat;
+    ballButton.material = ball_mat;
+    carButton.material = car_mat;
+    carButton.hidden = true;
+    ballButton.hidden = true;
     floor = CannonHelper.makeFloor();
 
     worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
     canShootSphere = false;
+    canShootCar = false;
     sphere.hidden = true;
     carAnimation.hidden = true;
     redButton.hidden = true;
     blueButton.hidden = true;
     greenButton.hidden = true;
     yellowButton.hidden = true;
-    cannonButton.material = ball_mat;
+    ballButton.material = ball_mat;
     carButton.material = car_mat;
     sphereIndex = -1;
+    carIndex = -1;
     blockPos = [];
     blockMat = [];
+    numBlock = 0;
     newestIndex = 0;
     for (var b in blocks){
         blocks[b].hidden = true;
@@ -350,7 +358,7 @@ function setupSphereRot(){
 function setupSphere(){
     sphere.hidden = false;
 
-    cannonButton.material = selected_ball_mat;
+    ballButton.material = selected_ball_mat;
     setupSphereRot();
     if(sphereIndex != -1){
         worldObjects.splice(sphereIndex, 1);
@@ -552,54 +560,55 @@ TouchGestures.onTap(blockButton).subscribe(function (gesture) {
 });
 
 TouchGestures.onTap(gravityButton).subscribe(function(e) {
-    if(numBlock == 0){
-        if(!gravitySignal){
-            cannonButton.hidden = false;
-            carButton.hidden = false;
-            updatePhysicsObjects();
-            gravitySignal = true;
-            gravityButton.material = gravity_inverse_mat;
-        }
-        else {
-            cannonButton.hidden = true;
-            carButton.hidden = true;
-            sphere.hidden = true;
-            carAnimation.hidden = true;
-            gravityButton.material = gravity_mat;
-            if(sphereIndex != -1){
-                worldObjects.splice(sphereIndex,1)
-                sphereIndex = -1;
-                //sphere.hidden = true;
-                setupSphereRot();
-                canShootSphere = false;
 
-            }
-            if(carIndex != -1){
-                worldObjects.splice(carIndex,1)
-                carIndex = -1;
-                //carAnimation.hidden = true;
-                canShootCar = false
-            }
-            resetBlockPos();
-        }
+    if(!gravitySignal){
+        if(numBlock != 0)
+            changeMat(numBlock)
+        ballButton.hidden = false;
+        carButton.hidden = false;
+        updatePhysicsObjects();
+        gravitySignal = true;
+        gravityButton.material = gravity_inverse_mat;
     }
+    else {
+        ballButton.hidden = true;
+        carButton.hidden = true;
+        sphere.hidden = true;
+        carAnimation.hidden = true;
+        gravityButton.material = gravity_mat;
+        if(sphereIndex != -1)
+            worldObjects.splice(sphereIndex,1)
+        sphereIndex = -1;
+        setupSphereRot();
+        canShootSphere = false;
+        ballButton.material = ball_mat;
+
+        if(carIndex != -1)
+            worldObjects.splice(carIndex,1)
+        carIndex = -1;
+        carButton.material = car_mat;
+        //carAnimation.hidden = true;
+        canShootCar = false
+
+        resetBlockPos();
+    }
+
 
 })
 TouchGestures.onTap(resetButton).subscribe(function(gesture){
-    if(!gravitySignal)
-        initWorld();
     resetButton.material = selected_reset_mat;
     Time.setTimeout(function(){ resetButton.material = reset_mat },125);
+    initWorld();
 
 
 
 })
 
-TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
+TouchGestures.onTap(ballButton).subscribe(function (gesture) {
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootCar = false;
-    cannonButton.material = selected_ball_mat;
+    ballButton.material = selected_ball_mat;
     carButton.material = car_mat;
 
     if(carIndex != -1){
@@ -614,7 +623,7 @@ TouchGestures.onTap(cannonButton).subscribe(function (gesture) {
     else if(canShootSphere){
         canShootSphere = false;
         sphere.hidden = true;
-        cannonButton.material = ball_mat;
+        ballButton.material = ball_mat;
 
     }
 });
@@ -623,7 +632,7 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootSphere = false;
-    cannonButton.material = ball_mat;
+    ballButton.material = ball_mat;
 
     if(sphereIndex != -1){
         worldObjects.splice(sphereIndex,1)
