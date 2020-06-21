@@ -566,22 +566,17 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
             changeMat(numBlock)
         ballButton.hidden = false;
         carButton.hidden = false;
+        gravityButton.material = gravity_inverse_mat;
+        blockButton.material = selected_add_block_mat;
         updatePhysicsObjects();
         gravitySignal = true;
-        gravityButton.material = gravity_inverse_mat;
     }
     else {
-        ballButton.hidden = true;
-        carButton.hidden = true;
-        sphere.hidden = true;
-        carAnimation.hidden = true;
-        gravityButton.material = gravity_mat;
         if(sphereIndex != -1)
             worldObjects.splice(sphereIndex,1)
         sphereIndex = -1;
         setupSphereRot();
         canShootSphere = false;
-        ballButton.material = ball_mat;
 
         if(carIndex != -1)
             worldObjects.splice(carIndex,1)
@@ -589,6 +584,14 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
         carButton.material = car_mat;
         //carAnimation.hidden = true;
         canShootCar = false
+
+        ballButton.hidden = true;
+        carButton.hidden = true;
+        sphere.hidden = true;
+        carAnimation.hidden = true;
+        ballButton.material = ball_mat;
+        blockButton.material = add_block_mat;
+        gravityButton.material = gravity_mat;
 
         resetBlockPos();
     }
