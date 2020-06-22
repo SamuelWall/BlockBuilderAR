@@ -10,6 +10,14 @@ const DeviceMotion = require('DeviceMotion');
 const Patches = require('Patches');
 const Random = require('Random');
 
+<<<<<<< HEAD
+=======
+var inst1 = false
+var inst2 = false
+
+
+
+>>>>>>> ee334d74195c650ff8d90df3b24ce93ba05bbb42
 
 
 const root = Scene.root;
@@ -104,6 +112,10 @@ var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 
 var pointSig = Patches.getPointValue('zeroPointSignal')
+<<<<<<< HEAD
+=======
+
+>>>>>>> ee334d74195c650ff8d90df3b24ce93ba05bbb42
 //Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
 /*function setupSphereRot(){
     //projectile transform
@@ -608,6 +620,10 @@ TouchGestures.onTap(resetButton).subscribe(function(gesture){
 })
 
 TouchGestures.onTap(ballButton).subscribe(function (gesture) {
+<<<<<<< HEAD
+=======
+   
+>>>>>>> ee334d74195c650ff8d90df3b24ce93ba05bbb42
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootCar = false;
