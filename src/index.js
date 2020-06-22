@@ -487,10 +487,10 @@ function changeMat(bid) {
             yellowButton.hidden = false;
 
 
-
-            block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
-            block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
-            block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
+            block.worldTransform.position = posObject.worldTransform.position
+            //block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
+            //block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
+            //block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
             /*Diagnostics.watch("X: ",block.transform.x)
             Diagnostics.watch("Y: ",block.transform.y)
             Diagnostics.watch("Z: ",block.transform.z)
