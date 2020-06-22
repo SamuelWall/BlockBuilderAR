@@ -10,21 +10,13 @@ const DeviceMotion = require('DeviceMotion');
 const Patches = require('Patches');
 const Random = require('Random');
 
-<<<<<<< HEAD
-=======
-var inst1 = false
-var inst2 = false
-
-
-
->>>>>>> ee334d74195c650ff8d90df3b24ce93ba05bbb42
 
 
 const root = Scene.root;
 const fd = Scene.root
-  .child('Device')
-  .child('Camera')
-  .child('Focal Distance')
+    .child('Device')
+    .child('Camera')
+    .child('Focal Distance')
 
 var canvas = fd.child('canvas0')
 const planeTracker = root.child('planeTracker0')
@@ -112,10 +104,6 @@ var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 
 var pointSig = Patches.getPointValue('zeroPointSignal')
-<<<<<<< HEAD
-=======
-
->>>>>>> ee334d74195c650ff8d90df3b24ce93ba05bbb42
 //Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
 /*function setupSphereRot(){
     //projectile transform
@@ -158,13 +146,13 @@ function setupCarPos() {
 
 
     // Get the angle of the camera
-  //  var yRot = deviceWorldTransform.rotationY;
+    //  var yRot = deviceWorldTransform.rotationY;
 
     //var NewXPos =  Reactive.mul(Reactive.cos(yRot), touchPos.x);
 
 
 
-   car.transform.x = touchPos.x;
+    car.transform.x = touchPos.x;
 
 }
 var canShootCar = false;
@@ -216,7 +204,7 @@ var lastTime;
 
 var updateTimer;
 
-function initWorld(){     //resets world objects and makes them all hidden
+function initWorld() {     //resets world objects and makes them all hidden
     gravitySignal = false;
     gravity = true;
 
@@ -244,30 +232,30 @@ function initWorld(){     //resets world objects and makes them all hidden
     blockMat = [];
     numBlock = 0;
     newestIndex = 0;
-    for (var b in blocks){
+    for (var b in blocks) {
         blocks[b].hidden = true;
     }
     cannonHelper = new CannonHelper(worldObjects);
 }
-function updatePhysicsObjects(cutOff = 0){    //Updates the positions of the block physics objects (hitboxes)
-    for (var b = 0; b < blockPos.length-cutOff; b++){
+function updatePhysicsObjects(cutOff = 0) {    //Updates the positions of the block physics objects (hitboxes)
+    for (var b = 0; b < blockPos.length - cutOff; b++) {
         var block = blocks[b];
 
 
         blockPos[b] = new CANNON.Vec3(block.transform.x.lastValue, block.transform.y.lastValue, block.transform.z.lastValue)
-        worldObjects[b+1].physicsObject = initBlock(blockPos[b])
+        worldObjects[b + 1].physicsObject = initBlock(blockPos[b])
 
         cannonHelper = new CannonHelper(worldObjects)
 
 
     }
 }
-function resetBlockPos(){   //resets positions to before gravity sim
+function resetBlockPos() {   //resets positions to before gravity sim
     gravitySignal = false;
     gravity = true;
 
-    for(var i = 1; i < blockPos.length + 1; i++){
-        worldObjects[i].physicsObject = initBlock(blockPos[i-1])
+    for (var i = 1; i < blockPos.length + 1; i++) {
+        worldObjects[i].physicsObject = initBlock(blockPos[i - 1])
     }
 
     cannonHelper = new CannonHelper(worldObjects)
@@ -277,10 +265,10 @@ function initBlock(position) {  //returns a physics object of a block at a passe
     var blockBody = new CANNON.Body({
         mass: 0.2,
         position: position,
-        shape: new CANNON.Box(new CANNON.Vec3(blockLength/4, blockLength/4, blockLength/4))
+        shape: new CANNON.Box(new CANNON.Vec3(blockLength / 4, blockLength / 4, blockLength / 4))
     })
 
-  return blockBody;
+    return blockBody;
 }
 var newBlockPosX;
 var newBlockPosY;
@@ -290,8 +278,8 @@ var lastCamRotY;
 var lastCamRotZ;
 
 
-function makeBlock(){      //makes a new block, adds it to world objects, etc
-    if(newestIndex < 15){
+function makeBlock() {      //makes a new block, adds it to world objects, etc
+    if (newestIndex < 15) {
         var sceneBlock = blocks[newestIndex];
 
         /*lastCamRotY = camRotY.lastValue
@@ -340,7 +328,7 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         newBlockPosZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
 
         var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ); */
-        var Npos = new CANNON.Vec3(0,0,0)
+        var Npos = new CANNON.Vec3(0, 0, 0)
         /*sceneBlock.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
         sceneBlock.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
         sceneBlock.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)*/
@@ -351,8 +339,8 @@ function makeBlock(){      //makes a new block, adds it to world objects, etc
         blockMat.push(matIndex)
 
         // make a physics object for the block
-        worldObjects.push({sceneObject: sceneBlock, physicsObject: initBlock(Npos)});    //add it to world objects
-        changeMat(newestIndex+1);     //make the new block selected
+        worldObjects.push({ sceneObject: sceneBlock, physicsObject: initBlock(Npos) });    //add it to world objects
+        changeMat(newestIndex + 1);     //make the new block selected
 
 
         //updatePhysicsObjects(1);      // update physics hitboxes for all blocks
@@ -373,15 +361,15 @@ function initSphere(pos) {
     })
     return sphereBody;
 }
-function setupSphereRot(){
+function setupSphereRot() {
     sphere.worldTransform.position = posObject.worldTransform.position;
 }
-function setupSphere(){
+function setupSphere() {
     sphere.hidden = false;
 
     ballButton.material = selected_ball_mat;
     setupSphereRot();
-    if(sphereIndex != -1){
+    if (sphereIndex != -1) {
         worldObjects.splice(sphereIndex, 1);
         sphereIndex = -1;
         //setupSphereRot();
@@ -447,74 +435,74 @@ function fireCar() {
     //var camRotY = deviceWorldTransform.rotationY
 
 
-    var carForce = new CANNON.Vec3( 0, 0, -500)
+    var carForce = new CANNON.Vec3(0, 0, -500)
 
     cannonCar.applyLocalImpulse(carForce, carPos)
-   // cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
+    // cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
 }
 
 
 
-function changeMat(bid){
-    if(!gravity){
+function changeMat(bid) {
+    if (!gravity) {
         /*Promise.all([
             Materials.findFirst('Cube_mat'),
             Materials.findFirst('SelectedBlock_mat'),
         ]).then(function(results){*/
-            var block = blocks[bid-1];
-            var blockMesh = block.child('Cube')
-            //var nObj = blocks[bid-1].child('nullObject0')
-            if(numBlock == bid){
-                numBlock = 0;
+        var block = blocks[bid - 1];
+        var blockMesh = block.child('Cube')
+        //var nObj = blocks[bid-1].child('nullObject0')
+        if (numBlock == bid) {
+            numBlock = 0;
 
-                redButton.hidden = true;
-                blueButton.hidden = true;
-                greenButton.hidden = true;
-                yellowButton.hidden = true;
+            redButton.hidden = true;
+            blueButton.hidden = true;
+            greenButton.hidden = true;
+            yellowButton.hidden = true;
 
 
-                //block.material = results[0];
-                blockMesh.material = mats[blockMat[bid-1]]
-                Patches.setScalarValue('numBlock', numBlock)
+            //block.material = results[0];
+            blockMesh.material = mats[blockMat[bid - 1]]
+            Patches.setScalarValue('numBlock', numBlock)
 
-                //block.worldTransform.position = nObj.worldTransform.position
-                //Diagnostics.watch("SHIT: ", block.worldTransform.position.x.pinLastValue())
-                block.transform.x = block.transform.x.pinLastValue()
-                block.transform.y = block.transform.y.pinLastValue()
-                block.transform.z = block.transform.z.pinLastValue()
-                //updatePhysicsObjects();
+            //block.worldTransform.position = nObj.worldTransform.position
+            //Diagnostics.watch("SHIT: ", block.worldTransform.position.x.pinLastValue())
+            block.transform.x = block.transform.x.pinLastValue()
+            block.transform.y = block.transform.y.pinLastValue()
+            block.transform.z = block.transform.z.pinLastValue()
+            //updatePhysicsObjects();
 
+        }
+        else {
+
+            if (numBlock != 0) {
+                blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock - 1]];
+                blocks[numBlock - 1].transform.x = blocks[numBlock - 1].transform.x.pinLastValue()
+                blocks[numBlock - 1].transform.y = blocks[numBlock - 1].transform.y.pinLastValue()
+                blocks[numBlock - 1].transform.z = blocks[numBlock - 1].transform.z.pinLastValue()
             }
-            else  {
-
-                if(numBlock != 0){
-                    blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock-1]];
-                    blocks[numBlock - 1].transform.x = blocks[numBlock - 1].transform.x.pinLastValue()
-                    blocks[numBlock - 1].transform.y = blocks[numBlock - 1].transform.y.pinLastValue()
-                    blocks[numBlock - 1].transform.z = blocks[numBlock - 1].transform.z.pinLastValue()
-                }
-                redButton.hidden = false;
-                blueButton.hidden = false;
-                greenButton.hidden = false;
-                yellowButton.hidden = false;
+            redButton.hidden = false;
+            blueButton.hidden = false;
+            greenButton.hidden = false;
+            yellowButton.hidden = false;
 
 
 
-                block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
-                block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
-                block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
-                /*Diagnostics.watch("X: ",block.transform.x)
-                Diagnostics.watch("Y: ",block.transform.y)
-                Diagnostics.watch("Z: ",block.transform.z)
-                Diagnostics.watch("wX: ",block.worldTransform.x)
-                Diagnostics.watch("wY: ",block.worldTransform.y)
-                Diagnostics.watch("wZ: ",block.worldTransform.z)*/
+            block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
+            block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
+            block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
+            /*Diagnostics.watch("X: ",block.transform.x)
+            Diagnostics.watch("Y: ",block.transform.y)
+            Diagnostics.watch("Z: ",block.transform.z)
+            Diagnostics.watch("wX: ",block.worldTransform.x)
+            Diagnostics.watch("wY: ",block.worldTransform.y)
+            Diagnostics.watch("wZ: ",block.worldTransform.z)*/
 
 
-                numBlock = bid;
-                blockMesh.material = selectedMats[blockMat[bid-1]];
-                Patches.setScalarValue('numBlock', numBlock)
-            }
+            numBlock = bid;
+            blockMesh.material = selectedMats[blockMat[bid - 1]];
+            Patches.setScalarValue('numBlock', numBlock)
+        }
         //})
     }
 }
@@ -523,20 +511,20 @@ var NewYPos;
 var NewZPos;
 var yRot = deviceWorldTransform.rotationY;
 
-function moveBlock(bid){
-    for(var i = 0; i < blocks.length; i++){
-        if(i == bid){
+function moveBlock(bid) {
+    for (var i = 0; i < blocks.length; i++) {
+        if (i == bid) {
             var block = blocks[i];
             const blockTransform = block.transform;
 
-            var touchPos = Patches.getVectorValue('patchPosition'+(i+1));
+            var touchPos = Patches.getVectorValue('patchPosition' + (i + 1));
             //blockPos[bid] = new CANNON.Vec3(blockTransform.x.lastValue,blockTransform.y.lastValue,blockTransform.z.lastValuee)
 
-      // Get the angle of the camera                                                         |
+            // Get the angle of the camera                                                         |
             // Try subtracting touch pos by a stored lastValue of touch pos in this version \/
-            var NewXPos = Reactive.add(newBlockPosX,Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x));
-            var NewYPos = Reactive.add(newBlockPosY,Reactive.mul(touchPos.y,-1));
-            var NewZPos = Reactive.add(newBlockPosZ,Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x));
+            var NewXPos = Reactive.add(newBlockPosX, Reactive.mul(Reactive.cos(yRot.lastValue), touchPos.x));
+            var NewYPos = Reactive.add(newBlockPosY, Reactive.mul(touchPos.y, -1));
+            var NewZPos = Reactive.add(newBlockPosZ, Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)), touchPos.x));
 
             /*
             var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
@@ -550,9 +538,9 @@ function moveBlock(bid){
 
             updatePhysicsObjects();
 
-      //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
+            //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
+        }
     }
-  }
 }
 
 
@@ -563,18 +551,18 @@ function moveBlock(bid){
     setupCarPos();
 });*/
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
-    if(!gravitySignal) {
+    if (!gravitySignal) {
         makeBlock();
         blockButton.material = selected_add_block_mat;
-        Time.setTimeout(function(){ blockButton.material = add_block_mat },125);
+        Time.setTimeout(function () { blockButton.material = add_block_mat }, 125);
         //updatePhysicsObjects();
     }
 });
 
-TouchGestures.onTap(gravityButton).subscribe(function(e) {
+TouchGestures.onTap(gravityButton).subscribe(function (e) {
 
-    if(!gravitySignal){
-        if(numBlock != 0)
+    if (!gravitySignal) {
+        if (numBlock != 0)
             changeMat(numBlock)
         ballButton.hidden = false;
         carButton.hidden = false;
@@ -584,14 +572,14 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
         gravitySignal = true;
     }
     else {
-        if(sphereIndex != -1)
-            worldObjects.splice(sphereIndex,1)
+        if (sphereIndex != -1)
+            worldObjects.splice(sphereIndex, 1)
         sphereIndex = -1;
         setupSphereRot();
         canShootSphere = false;
 
-        if(carIndex != -1)
-            worldObjects.splice(carIndex,1)
+        if (carIndex != -1)
+            worldObjects.splice(carIndex, 1)
         carIndex = -1;
         carButton.material = car_mat;
         //carAnimation.hidden = true;
@@ -610,9 +598,9 @@ TouchGestures.onTap(gravityButton).subscribe(function(e) {
 
 
 })
-TouchGestures.onTap(resetButton).subscribe(function(gesture){
+TouchGestures.onTap(resetButton).subscribe(function (gesture) {
     resetButton.material = selected_reset_mat;
-    Time.setTimeout(function(){ resetButton.material = reset_mat },125);
+    Time.setTimeout(function () { resetButton.material = reset_mat }, 125);
     initWorld();
 
 
@@ -620,18 +608,14 @@ TouchGestures.onTap(resetButton).subscribe(function(gesture){
 })
 
 TouchGestures.onTap(ballButton).subscribe(function (gesture) {
-<<<<<<< HEAD
-=======
-   
->>>>>>> ee334d74195c650ff8d90df3b24ce93ba05bbb42
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootCar = false;
     ballButton.material = selected_ball_mat;
     carButton.material = car_mat;
 
-    if(carIndex != -1){
-        worldObjects.splice(carIndex,1)
+    if (carIndex != -1) {
+        worldObjects.splice(carIndex, 1)
         carIndex = -1;
         //carAnimation.hidden = true;
     }
@@ -639,7 +623,7 @@ TouchGestures.onTap(ballButton).subscribe(function (gesture) {
     if (gravity && !canShootSphere)
         setupSphere();
 
-    else if(canShootSphere){
+    else if (canShootSphere) {
         canShootSphere = false;
         sphere.hidden = true;
         ballButton.material = ball_mat;
@@ -653,8 +637,8 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
     canShootSphere = false;
     ballButton.material = ball_mat;
 
-    if(sphereIndex != -1){
-        worldObjects.splice(sphereIndex,1)
+    if (sphereIndex != -1) {
+        worldObjects.splice(sphereIndex, 1)
         sphereIndex = -1;
         //sphere.hidden = true;
         setupSphereRot();
@@ -672,10 +656,10 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
     }
 });
 
-TouchGestures.onTap().subscribe(function (gesture){
-    if(canShootSphere)
+TouchGestures.onTap().subscribe(function (gesture) {
+    if (canShootSphere)
         fireSphere();
-    else if(sphereIndex != -1){
+    else if (sphereIndex != -1) {
         setupSphere();
     }
     else if (canShootCar)
@@ -686,37 +670,37 @@ TouchGestures.onTap().subscribe(function (gesture){
 });
 
 
-TouchGestures.onTap(redButton).subscribe(function(gesture){
-    if(numBlock != 0){
-        blockMat[numBlock-1] = 0;
-        blocks[numBlock-1].child('Cube').material = selectedMats[0];
+TouchGestures.onTap(redButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 0;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[0];
         redButton.material = selected_red_mat;
-        Time.setTimeout(function(){ redButton.material = red_mat },125);
+        Time.setTimeout(function () { redButton.material = red_mat }, 125);
     }
 
 });
-TouchGestures.onTap(blueButton).subscribe(function(gesture){
-    if(numBlock != 0){
-        blockMat[numBlock-1] = 1;
-        blocks[numBlock-1].child('Cube').material = selectedMats[1];
+TouchGestures.onTap(blueButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 1;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[1];
         blueButton.material = selected_blue_mat;
-        Time.setTimeout(function(){ blueButton.material = blue_mat },125);
+        Time.setTimeout(function () { blueButton.material = blue_mat }, 125);
     }
 });
-TouchGestures.onTap(greenButton).subscribe(function(gesture){
-    if(numBlock != 0){
-        blockMat[numBlock-1] = 2;
-        blocks[numBlock-1].child('Cube').material = selectedMats[2];
+TouchGestures.onTap(greenButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 2;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[2];
         greenButton.material = selected_green_mat;
-        Time.setTimeout(function(){ greenButton.material = green_mat },125);
+        Time.setTimeout(function () { greenButton.material = green_mat }, 125);
     }
 });
-TouchGestures.onTap(yellowButton).subscribe(function(gesture){
-    if(numBlock != 0){
-        blockMat[numBlock-1] = 3;
-        blocks[numBlock-1].child('Cube').material = selectedMats[3];
+TouchGestures.onTap(yellowButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 3;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[3];
         yellowButton.material = selected_yellow_mat;
-        Time.setTimeout(function(){ yellowButton.material = yellow_mat },125);
+        Time.setTimeout(function () { yellowButton.material = yellow_mat }, 125);
     }
 });
 /*
@@ -774,12 +758,12 @@ TouchGestures.onTap(blocks[14]).subscribe(function (gesture) {
 });
 
 
-Time.ms.interval(loopTimeMs).subscribe(function(elapsedTime) {
+Time.ms.interval(loopTimeMs).subscribe(function (elapsedTime) {
     if (lastTime !== undefined) {
         var deltaTime = (elapsedTime - lastTime) / 1000
 
 
-        if(gravity){
+        if (gravity) {
             cannonHelper.update(deltaTime)
         }
 
