@@ -103,7 +103,7 @@ var camRotX = deviceWorldTransform.rotationX;
 var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 
-var pointSig = Patches.getPointValue('zeroPointSignal')
+//var pointSig = Patches.getPointValue('zeroPointSignal')
 //Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
 /*function setupSphereRot(){
     //projectile transform
