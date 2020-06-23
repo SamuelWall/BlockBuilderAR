@@ -617,6 +617,7 @@ TouchGestures.onTap().subscribe(function (gesture) {
         fireSphere();
     else if (sphereIndex != -1) {
         setupSphere();
+        Patches.setPulseValue("reload", Reactive.once())
     }
     else if (canShootCar)
         fireCar();
