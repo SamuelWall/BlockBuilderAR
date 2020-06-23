@@ -43,13 +43,18 @@ const block_red = Materials.get('Block_mat_red');
 const block_blue = Materials.get('Block_mat_blue');
 const block_green = Materials.get('Block_mat_green');
 const block_yellow = Materials.get('Block_mat_yellow');
-var mats = [block_red, block_blue, block_green, block_yellow]
+const block_purple = Materials.get('Block_mat_purple');
+const block_orange = Materials.get('Block_mat_orange');
+var mats = [block_red, block_blue, block_green, block_yellow, block_purple, block_orange]
 
 const selected_red = Materials.get('Selected_mat_red');
 const selected_blue = Materials.get('Selected_mat_blue');
 const selected_green = Materials.get('Selected_mat_green');
 const selected_yellow = Materials.get('Selected_mat_yellow');
-var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow]
+const selected_purple = Materials.get('Selected_mat_purple');
+const selected_orange = Materials.get('Selected_mat_orange');
+
+var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow, selected_purple, selected_orange]
 
 const add_block_mat = Materials.get('mat16')
 const selected_add_block_mat = Materials.get('selected_add_block_mat');
@@ -102,6 +107,8 @@ var devicePosZ = deviceWorldTransform.position.z;
 var camRotX = deviceWorldTransform.rotationX;
 var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
+
+var ballTimeout;
 
 //var pointSig = Patches.getPointValue('zeroPointSignal')
 //Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
@@ -162,7 +169,7 @@ import CANNON from 'cannon'
 import CannonHelper from 'spark-ar-physics'
 Instruction.bind(CameraInfo.captureDevicePosition.eq(CameraInfo.CameraPosition.FRONT), 'flip_camera')
 
-var posObj = camera.child('positionObject')
+var posObject = camera.child('positionObject')
 var blockPosObj = camera.child('blockPositionObject')
 var planeTrackObj = planeTracker.child('planePos')
 var floorPlane = planeTracker.child('plane0')
@@ -211,7 +218,7 @@ function initWorld() {     //resets world objects and makes them all hidden
     gravityButton.material = gravity_mat;
     ballButton.material = ball_mat;
     carButton.material = car_mat;
-    blockButton.material = add_block_mat;
+
     carButton.hidden = true;
     ballButton.hidden = true;
     floor = CannonHelper.makeFloor();
@@ -283,13 +290,59 @@ function makeBlock() {      //makes a new block, adds it to world objects, etc
     if (newestIndex < 15) {
         var sceneBlock = blocks[newestIndex];
 
+        /*lastCamRotY = camRotY.lastValue
+        lastCamRotZ = camRotZ.lastValue
+        var pseudoRadius = 150;
+        var offsetX = (devicePosX.lastValue/2) * 100;
+        newBlockPosX = (-pseudoRadius*Math.sin(lastCamRotY)+(devicePosX.lastValue*pseudoRadius)) - offsetX;
+        newBlockPosY = (devicePosY.lastValue*pseudoRadius) + 10;
+        var neg = 1
+        var objectWorldPosZ = devicePosZ.lastValue + 1.5;
+        var offsetZ = pseudoRadius - (devicePosZ.lastValue / 2)*150 ;
+        var latterOffset = 0
+        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
+            neg = -1;
+            latterOffset = 2 * objectWorldPosZ * 100;
+            //offsetZ = 20;
+            //if (cameraPosZ.lastValue < 0) {
+            //    neg = 1;
+            //}
+
+        }
+
+
+        newBlockPosZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(devicePosZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
+
+        //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*newBlockPosX), newBlockPosY + 10, (Math.cos(lastCamRotY)*newBlockPosY));
+
+        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ);*/
+        /*
+        lastCamRotY = camRotY.lastValue
+        lastCamRotZ = camRotZ.lastValue
+
+        newBlockPosX = ((Math.sin(lastCamRotY)+ devicePosX.lastValue) * -1.5 + 2*devicePosX.lastValue + (devicePosX.lastValue * .5))*100
+        newBlockPosY = devicePosY.lastValue * 100;
+        var neg = 1
+        var objectWorldPosZ = (devicePosZ.lastValue + 0) * 1;
+
+        var latterOffset = 0
+        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
+            neg = -1;
+            latterOffset = 2 * objectWorldPosZ - latterOffset;
+            //offsetZ = 20;
+
+
+        }
+        newBlockPosZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
+
+        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ); */
         var Npos = new CANNON.Vec3(0, 0, 0)
         /*sceneBlock.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
         sceneBlock.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
         sceneBlock.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)*/
 
-        blockPos.push(Npos)     //calculate position of new block and add to positions array
-
+        blockPos.push(Npos)                              //calculate position of new block and add to positions array
+        //blockWT.push(sceneBlock.child('Cube').worldTransform.position)
         var matIndex = Math.floor(Random.random() * mats.length);
         blockMat.push(matIndex)
 
@@ -317,7 +370,9 @@ function initSphere(pos) {
     return sphereBody;
 }
 function setupSphereRot() {
-    sphere.worldTransform.position = posObj.worldTransform.position;
+    sphere.worldTransform.position = posObject.worldTransform.position;
+    if(ballTimeout != undefined)
+        Time.clearTimeout(ballTimeout)
 }
 function setupSphere() {
     sphere.hidden = false;
@@ -351,7 +406,8 @@ function fireSphere() {
 
     cannonSphere.applyLocalImpulse(sphereForce, spherePos)
     cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
-    Time.setTimeout(function () { sphere.hidden = true}, 1500);
+    ballTimeout = Time.setTimeout(function () { sphere.hidden = true}, 1500);
+
 }
 function initCar(carpos) {
     var carBody = new CANNON.Body({
@@ -443,7 +499,7 @@ function changeMat(bid) {
             yellowButton.hidden = false;
 
 
-            block.worldTransform.position = blockPosObj.worldTransform.position
+            block.worldTransform.position = posObject.worldTransform.position
             //block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
             //block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
             //block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
@@ -467,7 +523,7 @@ var NewYPos;
 var NewZPos;
 var yRot = deviceWorldTransform.rotationY;
 
-/*function moveBlock(bid) {
+function moveBlock(bid) {
     for (var i = 0; i < blocks.length; i++) {
         if (i == bid) {
             var block = blocks[i];
@@ -482,11 +538,11 @@ var yRot = deviceWorldTransform.rotationY;
             var NewYPos = Reactive.add(newBlockPosY, Reactive.mul(touchPos.y, -1));
             var NewZPos = Reactive.add(newBlockPosZ, Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)), touchPos.x));
 
-
-            //var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
-            //var NewYPos = Reactive.mul(touchPos.y,-1);
-            //var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
-
+            /*
+            var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
+            var NewYPos = Reactive.mul(touchPos.y,-1);
+            var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
+            */
             blockTransform.x = NewXPos;
             blockTransform.y = NewYPos;
             blockTransform.z = NewZPos;
@@ -495,19 +551,17 @@ var yRot = deviceWorldTransform.rotationY;
             updatePhysicsObjects();
 
             //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
-
         }
     }
 }
 
 
 
-*/
+
 /*TouchGestures.onPan().subscribe(function (gesture) {
     moveBlock(numBlock- 1);
     setupCarPos();
-});
-}*/
+});*/
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if (!gravitySignal) {
         makeBlock();
@@ -566,8 +620,6 @@ TouchGestures.onTap(resetButton).subscribe(function (gesture) {
 })
 
 TouchGestures.onTap(ballButton).subscribe(function (gesture) {
-    var shootinst = true
-    Patches.setBooleanValue("shootinst", shootinst)
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootCar = false;
@@ -621,7 +673,6 @@ TouchGestures.onTap().subscribe(function (gesture) {
         fireSphere();
     else if (sphereIndex != -1) {
         setupSphere();
-        Patches.setPulseValue("reload", Reactive.once())
     }
     else if (canShootCar)
         fireCar();
