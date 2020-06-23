@@ -445,6 +445,9 @@ function fireCar() {
 
 function changeMat(bid) {
     if (!gravity) {
+    
+
+        Patches.setPulseValue("eve", Reactive.once())
         /*Promise.all([
             Materials.findFirst('Cube_mat'),
             Materials.findFirst('SelectedBlock_mat'),
@@ -459,8 +462,7 @@ function changeMat(bid) {
             blueButton.hidden = true;
             greenButton.hidden = true;
             yellowButton.hidden = true;
-
-
+          
             //block.material = results[0];
             blockMesh.material = mats[blockMat[bid - 1]]
             Patches.setScalarValue('numBlock', numBlock)
@@ -562,6 +564,8 @@ TouchGestures.onTap(blockButton).subscribe(function (gesture) {
 TouchGestures.onTap(gravityButton).subscribe(function (e) {
 
     if (!gravitySignal) {
+
+       
         if (numBlock != 0)
             changeMat(numBlock)
         ballButton.hidden = false;
