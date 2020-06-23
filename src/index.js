@@ -516,7 +516,7 @@ function changeMat(bid) {
             orangeButton.hidden = false;
 
 
-            block.worldTransform.position = blockpPosObject.worldTransform.position
+            block.worldTransform.position = blockPosObj.worldTransform.position
             //block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
             //block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
             //block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
