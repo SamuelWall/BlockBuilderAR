@@ -29,12 +29,16 @@ const redButton = canvas.child('redButton')
 const blueButton = canvas.child('blueButton')
 const greenButton = canvas.child('greenButton')
 const yellowButton = canvas.child('yellowButton')
+const purpleButton = canvas.child('purpleButton')
+const orangeButton = canvas.child('orangeButton')
 const carButton = canvas.child('carButton');
 
 redButton.hidden = true;
 blueButton.hidden = true;
 greenButton.hidden = true;
 yellowButton.hidden = true;
+purpleButton.hidden = true;
+orangeButton.hidden = true;
 
 
 const deviceWorldTransform = DeviceMotion.worldTransform;
@@ -67,6 +71,12 @@ const selected_blue_mat = Materials.get('selected_blue_mat');
 
 const green_mat = Materials.get('green_button_mat');
 const selected_green_mat = Materials.get('selected_green_mat');
+
+const orange_mat = Materials.get('orange_button_mat');
+const selected_orange_mat = Materials.get('selected_orange_mat');
+
+const purple_mat = Materials.get('purple_button_mat');
+const selected_purple_mat = Materials.get('selected_purple_mat');
 
 const yellow_mat = Materials.get('yellow_button_mat');
 const selected_yellow_mat = Materials.get('selected_yellow_mat');
@@ -232,6 +242,8 @@ function initWorld() {     //resets world objects and makes them all hidden
     blueButton.hidden = true;
     greenButton.hidden = true;
     yellowButton.hidden = true;
+    purpleButton.hidden = true;
+    orangeButton.hidden = true;
     ballButton.material = ball_mat;
     carButton.material = car_mat;
     sphereIndex = -1;
@@ -471,6 +483,8 @@ function changeMat(bid) {
             blueButton.hidden = true;
             greenButton.hidden = true;
             yellowButton.hidden = true;
+            purpleButton.hidden = true;
+            orangeButton.hidden = true;
 
 
             //block.material = results[0];
@@ -497,6 +511,8 @@ function changeMat(bid) {
             blueButton.hidden = false;
             greenButton.hidden = false;
             yellowButton.hidden = false;
+            purpleButton.hidden = false;
+            orangeButton.hidden = false;
 
 
             block.worldTransform.position = posObject.worldTransform.position
@@ -713,6 +729,22 @@ TouchGestures.onTap(yellowButton).subscribe(function (gesture) {
         blocks[numBlock - 1].child('Cube').material = selectedMats[3];
         yellowButton.material = selected_yellow_mat;
         Time.setTimeout(function () { yellowButton.material = yellow_mat }, 125);
+    }
+});
+TouchGestures.onTap(purpleButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 3;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[4];
+        purpleButton.material = selected_purple_mat;
+        Time.setTimeout(function () { purpleButton.material = purple_mat }, 125);
+    }
+});
+TouchGestures.onTap(orangeButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 3;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[5];
+        orangeButton.material = selected_orange_mat;
+        Time.setTimeout(function () { orangeButton.material = orange_mat }, 125);
     }
 });
 /*
