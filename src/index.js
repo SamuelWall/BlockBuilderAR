@@ -170,6 +170,7 @@ function setupCarPos() {
 
 
     car.transform.x = touchPos.x;
+    car.transform.y = touchPos.y
 
 }
 var canShootCar = false;
@@ -449,7 +450,7 @@ function setupCar() {
 }
 function fireCar() {
     canShootCar = false;
-    var carPos = new CANNON.Vec3(car.transform.x.pinLastValue(), 0, car.transform.z.pinLastValue())
+    var carPos = new CANNON.Vec3(car.transform.x.lastValue, 0, car.transform.z.lastValue)
     //var spherePos = new CANNON.Vec3(sphere.transform.x.pinLastValue(), sphere.transform.y.pinLastValue(), sphere.transform.z.pinLastValue());
     var cannonCar = initCar(carPos);
     worldObjects.push({ sceneObject: car, physicsObject: cannonCar })
@@ -515,7 +516,7 @@ function changeMat(bid) {
             orangeButton.hidden = false;
 
 
-            block.worldTransform.position = posObject.worldTransform.position
+            block.worldTransform.position = blockpPosObject.worldTransform.position
             //block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
             //block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
             //block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
@@ -539,7 +540,7 @@ var NewYPos;
 var NewZPos;
 var yRot = deviceWorldTransform.rotationY;
 
-function moveBlock(bid) {
+/*function moveBlock(bid) {
     for (var i = 0; i < blocks.length; i++) {
         if (i == bid) {
             var block = blocks[i];
@@ -554,11 +555,11 @@ function moveBlock(bid) {
             var NewYPos = Reactive.add(newBlockPosY, Reactive.mul(touchPos.y, -1));
             var NewZPos = Reactive.add(newBlockPosZ, Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)), touchPos.x));
 
-            /*
+
             var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
             var NewYPos = Reactive.mul(touchPos.y,-1);
             var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
-            */
+
             blockTransform.x = NewXPos;
             blockTransform.y = NewYPos;
             blockTransform.z = NewZPos;
@@ -569,15 +570,15 @@ function moveBlock(bid) {
             //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
         }
     }
-}
+}*/
 
 
 
 
-/*TouchGestures.onPan().subscribe(function (gesture) {
-    moveBlock(numBlock- 1);
+TouchGestures.onPan().subscribe(function (gesture) {
+    //moveBlock(numBlock- 1);
     setupCarPos();
-});*/
+});
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if (!gravitySignal) {
         makeBlock();
@@ -674,9 +675,12 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
 
     }
 
-    if (gravity && !canShootCar)
+    if (gravity && !canShootCar) {
         setupCar();
-
+        //var touchPos = Patches.getVectorValue('CarPosition');
+        //carAnim.transform.x = touchPos.x
+        //carAnim.transform.z = touchPos.y
+    }
     else if (canShootCar) {
         canShootCar = false;
         carAnimation.hidden = true;
