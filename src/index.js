@@ -699,8 +699,10 @@ TouchGestures.onTap().subscribe(function (gesture) {
         setupSphere();
         Patches.setPulseValue('reload', Reactive.once())
     }
-    else if (canShootCar)
+    else if (canShootCar) {
         fireCar();
+        Patches.setPulseValue('acceleration', Reactive.once())
+    }
     else if (carIndex != -1) {
         setupCar();
     }
