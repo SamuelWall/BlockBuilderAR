@@ -467,7 +467,7 @@ var NewYPos;
 var NewZPos;
 var yRot = deviceWorldTransform.rotationY;
 
-function moveBlock(bid) {
+/*function moveBlock(bid) {
     for (var i = 0; i < blocks.length; i++) {
         if (i == bid) {
             var block = blocks[i];
@@ -482,11 +482,11 @@ function moveBlock(bid) {
             var NewYPos = Reactive.add(newBlockPosY, Reactive.mul(touchPos.y, -1));
             var NewZPos = Reactive.add(newBlockPosZ, Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)), touchPos.x));
 
-            /*
-            var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
-            var NewYPos = Reactive.mul(touchPos.y,-1);
-            var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
-            */
+
+            //var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
+            //var NewYPos = Reactive.mul(touchPos.y,-1);
+            //var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
+
             blockTransform.x = NewXPos;
             blockTransform.y = NewYPos;
             blockTransform.z = NewZPos;
@@ -495,17 +495,19 @@ function moveBlock(bid) {
             updatePhysicsObjects();
 
             //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
+
         }
     }
 }
 
 
 
-
+*/
 /*TouchGestures.onPan().subscribe(function (gesture) {
     moveBlock(numBlock- 1);
     setupCarPos();
-});*/
+});
+}*/
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
     if (!gravitySignal) {
         makeBlock();
