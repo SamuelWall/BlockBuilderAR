@@ -162,7 +162,7 @@ import CANNON from 'cannon'
 import CannonHelper from 'spark-ar-physics'
 Instruction.bind(CameraInfo.captureDevicePosition.eq(CameraInfo.CameraPosition.FRONT), 'flip_camera')
 
-var posObject = camera.child('positionObject')
+var posObj = camera.child('positionObject')
 var blockPosObj = camera.child('blockPositionObject')
 var planeTrackObj = planeTracker.child('planePos')
 var floorPlane = planeTracker.child('plane0')
@@ -211,7 +211,7 @@ function initWorld() {     //resets world objects and makes them all hidden
     gravityButton.material = gravity_mat;
     ballButton.material = ball_mat;
     carButton.material = car_mat;
-    blockButton.material = block_button_mat;
+    blockButton.material = add_block_mat;
     carButton.hidden = true;
     ballButton.hidden = true;
     floor = CannonHelper.makeFloor();
@@ -283,59 +283,13 @@ function makeBlock() {      //makes a new block, adds it to world objects, etc
     if (newestIndex < 15) {
         var sceneBlock = blocks[newestIndex];
 
-        /*lastCamRotY = camRotY.lastValue
-        lastCamRotZ = camRotZ.lastValue
-        var pseudoRadius = 150;
-        var offsetX = (devicePosX.lastValue/2) * 100;
-        newBlockPosX = (-pseudoRadius*Math.sin(lastCamRotY)+(devicePosX.lastValue*pseudoRadius)) - offsetX;
-        newBlockPosY = (devicePosY.lastValue*pseudoRadius) + 10;
-        var neg = 1
-        var objectWorldPosZ = devicePosZ.lastValue + 1.5;
-        var offsetZ = pseudoRadius - (devicePosZ.lastValue / 2)*150 ;
-        var latterOffset = 0
-        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
-            neg = -1;
-            latterOffset = 2 * objectWorldPosZ * 100;
-            //offsetZ = 20;
-            //if (cameraPosZ.lastValue < 0) {
-            //    neg = 1;
-            //}
-
-        }
-
-
-        newBlockPosZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(devicePosZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
-
-        //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*newBlockPosX), newBlockPosY + 10, (Math.cos(lastCamRotY)*newBlockPosY));
-
-        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ);*/
-        /*
-        lastCamRotY = camRotY.lastValue
-        lastCamRotZ = camRotZ.lastValue
-
-        newBlockPosX = ((Math.sin(lastCamRotY)+ devicePosX.lastValue) * -1.5 + 2*devicePosX.lastValue + (devicePosX.lastValue * .5))*100
-        newBlockPosY = devicePosY.lastValue * 100;
-        var neg = 1
-        var objectWorldPosZ = (devicePosZ.lastValue + 0) * 1;
-
-        var latterOffset = 0
-        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
-            neg = -1;
-            latterOffset = 2 * objectWorldPosZ - latterOffset;
-            //offsetZ = 20;
-
-
-        }
-        newBlockPosZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
-
-        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ); */
         var Npos = new CANNON.Vec3(0, 0, 0)
         /*sceneBlock.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
         sceneBlock.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
         sceneBlock.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)*/
 
-        blockPos.push(Npos)                              //calculate position of new block and add to positions array
-        //blockWT.push(sceneBlock.child('Cube').worldTransform.position)
+        blockPos.push(Npos)     //calculate position of new block and add to positions array
+
         var matIndex = Math.floor(Random.random() * mats.length);
         blockMat.push(matIndex)
 
@@ -363,7 +317,7 @@ function initSphere(pos) {
     return sphereBody;
 }
 function setupSphereRot() {
-    sphere.worldTransform.position = posObject.worldTransform.position;
+    sphere.worldTransform.position = posObj.worldTransform.position;
 }
 function setupSphere() {
     sphere.hidden = false;
@@ -447,9 +401,6 @@ function fireCar() {
 
 function changeMat(bid) {
     if (!gravity) {
-    
-
-        Patches.setPulseValue("eve", Reactive.once())
         /*Promise.all([
             Materials.findFirst('Cube_mat'),
             Materials.findFirst('SelectedBlock_mat'),
@@ -464,7 +415,8 @@ function changeMat(bid) {
             blueButton.hidden = true;
             greenButton.hidden = true;
             yellowButton.hidden = true;
-          
+
+
             //block.material = results[0];
             blockMesh.material = mats[blockMat[bid - 1]]
             Patches.setScalarValue('numBlock', numBlock)
@@ -491,7 +443,7 @@ function changeMat(bid) {
             yellowButton.hidden = false;
 
 
-            block.worldTransform.position = posObject.worldTransform.position
+            block.worldTransform.position = blockPosObj.worldTransform.position
             //block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
             //block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
             //block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
@@ -566,8 +518,6 @@ TouchGestures.onTap(blockButton).subscribe(function (gesture) {
 TouchGestures.onTap(gravityButton).subscribe(function (e) {
 
     if (!gravitySignal) {
-
-       
         if (numBlock != 0)
             changeMat(numBlock)
         ballButton.hidden = false;
