@@ -564,6 +564,8 @@ TouchGestures.onTap(resetButton).subscribe(function (gesture) {
 })
 
 TouchGestures.onTap(ballButton).subscribe(function (gesture) {
+    var shootinst = true
+    Patches.setBooleanValue("shootinst", shootinst)
     sphere.hidden = true;
     carAnimation.hidden = true;
     canShootCar = false;
