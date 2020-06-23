@@ -476,6 +476,7 @@ function changeMat(bid) {
         ]).then(function(results){*/
         var block = blocks[bid - 1];
         var blockMesh = block.child('Cube')
+        Patches.setPulseValue('eve', Reactive.once() )
         //var nObj = blocks[bid-1].child('nullObject0')
         if (numBlock == bid) {
             numBlock = 0;
@@ -487,7 +488,7 @@ function changeMat(bid) {
             purpleButton.hidden = true;
             orangeButton.hidden = true;
 
-
+            
             //block.material = results[0];
             blockMesh.material = mats[blockMat[bid - 1]]
             Patches.setScalarValue('numBlock', numBlock)
@@ -501,7 +502,7 @@ function changeMat(bid) {
 
         }
         else {
-
+            Patches.setPulseValue('select', Reactive.once())
             if (numBlock != 0) {
                 blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock - 1]];
                 blocks[numBlock - 1].transform.x = blocks[numBlock - 1].transform.x.pinLastValue()
@@ -660,6 +661,9 @@ TouchGestures.onTap(ballButton).subscribe(function (gesture) {
     }
 });
 TouchGestures.onTap(carButton).subscribe(function (gesture) {
+var carinst = true
+    Patches.setBooleanValue('carinst', carinst)
+    Patches.setPulseValue('carnoise', Reactive.once())
     carButton.material = selected_car_mat;
     sphere.hidden = true;
     carAnimation.hidden = true;
@@ -693,6 +697,7 @@ TouchGestures.onTap().subscribe(function (gesture) {
         fireSphere();
     else if (sphereIndex != -1) {
         setupSphere();
+        Patches.setPulseValue('reload', Reactive.once())
     }
     else if (canShootCar)
         fireCar();
