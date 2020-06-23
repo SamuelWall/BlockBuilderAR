@@ -211,6 +211,7 @@ function initWorld() {     //resets world objects and makes them all hidden
     gravityButton.material = gravity_mat;
     ballButton.material = ball_mat;
     carButton.material = car_mat;
+    blockButton.material = block_button_mat;
     carButton.hidden = true;
     ballButton.hidden = true;
     floor = CannonHelper.makeFloor();
@@ -396,6 +397,7 @@ function fireSphere() {
 
     cannonSphere.applyLocalImpulse(sphereForce, spherePos)
     cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
+    Time.setTimeout(function () { sphere.hidden = true}, 1500);
 }
 function initCar(carpos) {
     var carBody = new CANNON.Body({
