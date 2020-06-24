@@ -9,7 +9,7 @@ An augmented reality building block game
     In order to spawn a block, press the new block button. To place it, either tap the block to make it freeze where it is, add another block, or turn on gravity. Pressing the gravity button again will make the block positions reset to their pre-gravity locations. The reset button will clear all the blocks in the scene. 
 
 
-# Future plans
+## Future plans
 [ ]Implement real time buidling with friends
 [ ]New destruction objects
 [ ]Documentation 
