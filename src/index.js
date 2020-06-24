@@ -20,7 +20,7 @@ const fd = Scene.root
     .child('Device')
     .child('Camera')
     .child('Focal Distance')
-const canvas = fd.child('canvas')
+const canvas = fd.child('canvas0')
 const planeTracker = root.child('planeTracker0')
 const camera = root.child('Device').child('Camera');
 const blockButton = canvas.child('blockButton');
