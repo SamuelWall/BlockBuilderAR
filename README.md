@@ -5,7 +5,7 @@ BlockBuilder AR allows you to build towers with colorful building blocks, utiliz
 
 ## How to make changes to the script
 
-   In order to make changes to the code, you should make changes to index.js in the src file. After changes are made, open a command window in the repository and input npm i (make sure you have npm installed).  After that finishes input npm run build. After any change to index.js is made you'll need to input npm run build to make your changes apear in thhe editor.
+   In order to make changes to the code, you should make changes to index.js in the src file. After changes are made, open a command window in the repository and input npm i (make sure you have npm installed).  After that finishes input npm run build. After any change to index.js is made you'll need to input npm run build to make your changes apear in the editor.
 
 ## How to use the app
    
