@@ -557,8 +557,10 @@ var carinst = true
 });
 
 TouchGestures.onTap().subscribe(function (gesture) {
-    if (canShootSphere)
+    if (canShootSphere) {
         fireSphere();
+        Patches.setPulseValue('wooshtrig', Reactive.once())
+    }
     else if (sphereIndex != -1) {
         setupSphere();
         Patches.setPulseValue('reload', Reactive.once())
