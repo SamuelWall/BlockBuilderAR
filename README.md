@@ -2,52 +2,14 @@
 
 An augmented reality building block game
 
-## TODO
-### UI
-- [x] Make-block button
-- [x] Gravity button
-- [x] Reset button
-- [x] Discuss extended UI
-- [x] select colors button
-- [x] color options buttons
-- [ ] implement nicer color + car ui
-- [ ] Add Pop - ups
+   In order to make changes to the code, you should make changes to index.js in the src file. After changes are made, open a command window in the repository and input npm i (make sure you have npm installed).  After that finishes input npm run build. After any change to index.js is made you'll need to input npm run build to make your changes apear in thhe editor.
 
-### Script functionality for UI
-- [x] Turn on gravity
-- [x] Make block visible on creation
-- [x] Make blocks spawn in front of user
-
-### Blocks
-- [x] Make blocks draggable
-- [x] Select and deselect blocks
-- [ ] Edit Block size and distance
-- [x] Add color changes (Random)
-- [ ] Add shape selection
-
-### Destruction
-* Cannon Ball
-    - [x] Spawn cannon ball on button press
-    - [x] Shoot on tap
-    - [x] Multiple shots
+    BlockBuilder AR allows you to build towers with colorful building blocks, utilizing object physics to bring the creations to life. You can add blocks and change their colors. Grab and move them around by moving your device. When you're done with your creation, switch on gravity and watch it fall into place. BlockBuilder features two destruction objects: a ball to throw at your tower from different angles, or a car that races toward your tower for a more dramatic destruction. 
     
-* Car
-    - [x] Create car on spawn
-    - [x] Tire animation?
-    - [ ] Control Direction of force/Car
-    - [ ] Fix HitBox, and multiple shots
-    
+    In order to spawn a block, press the new block button. To place it, either tap the block to make it freeze where it is, add another block, or turn on gravity. Pressing the gravity button again will make the block positions reset to their pre-gravity locations. The reset button will clear all the blocks in the scene. 
 
-- [ ] Horde
 
-### General fixes
-- [x] Disallow gravity when block is selected and vice versa
-- [x] Fix Cannonball trajectory
-- [x] Fixed order and response of worldObjects
-- [ ] Place block below floor glitch (Maybe add Instructions when below floor)
-- [x] Blocks jump around on pan
-- [x] Block moves on rotation
-- [ ] Fix Cannonball position for following camera
-- [ ] Fix Wonkiness of New block spawn
-- [ ] Fix minor block jumps after rotation
-
+# Future plans
+[ ]Implement real time buidling with friends
+[ ]New destruction objects
+[ ]Documentation 
