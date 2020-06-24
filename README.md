@@ -14,7 +14,7 @@ BlockBuilder AR allows you to build towers with colorful building blocks, utiliz
    
 
 ## How to play
-    In order to spawn a block, press the new block button. To place it, either tap the block to make it freeze where it is, add another block, or turn on gravity. Pressing the gravity button again will make the block positions reset to their pre-gravity locations. The reset button will clear all the blocks in the scene. 
+   In order to spawn a block, press the new block button. To place it, either tap the block to make it freeze where it is, add another block, or turn on gravity. Pressing the gravity button again will make the block positions reset to their pre-gravity locations. The reset button will clear all the blocks in the scene. 
    Once gravity is turned on a selection of destructions objects will apear. The car can be dragged around the screen to line it up, and tapping the screen will send it vrooming forward. The ball will stay fixed in front of the user until the screen is tapped, and it will be thrown in the direction it's being pointed.
    
 ## Future plans
