@@ -10,6 +10,6 @@ An augmented reality building block game
 
 
 ## Future plans
-[]Implement real time buidling with friends
-[]New destruction objects
-[]Documentation 
+[x]Implement real time buidling with friends
+[x]New destruction objects
+[x]Documentation 
