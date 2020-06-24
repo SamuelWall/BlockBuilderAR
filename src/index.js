@@ -1,3 +1,5 @@
+////MODULE IMPORTS
+////////////////////////
 const Diagnostics = require('Diagnostics')
 const Instruction = require('Instruction')
 const CameraInfo = require('CameraInfo')
@@ -11,14 +13,14 @@ const Patches = require('Patches');
 const Random = require('Random');
 
 
-
+////SCENE OBJECTS
+/////////////////////////
 const root = Scene.root;
 const fd = Scene.root
     .child('Device')
     .child('Camera')
     .child('Focal Distance')
-
-var canvas = fd.child('canvas0')
+const canvas = fd.child('canvas')
 const planeTracker = root.child('planeTracker0')
 const camera = root.child('Device').child('Camera');
 const blockButton = canvas.child('blockButton');
@@ -32,6 +34,13 @@ const yellowButton = canvas.child('yellowButton')
 const purpleButton = canvas.child('purpleButton')
 const orangeButton = canvas.child('orangeButton')
 const carButton = canvas.child('carButton');
+const buttonsPlane = canvas.child('buttonsPlane')
+const buttonsBorder = canvas.child('buttonsBorder')
+const colorsPlane = canvas.child('colorsPlane')
+const colorsBorder = canvas.child('colorsBorder')
+const gravPlane = canvas.child('gravPlane')
+const gravBorder = canvas.child('gravBorder')
+
 
 redButton.hidden = true;
 blueButton.hidden = true;
@@ -39,6 +48,8 @@ greenButton.hidden = true;
 yellowButton.hidden = true;
 purpleButton.hidden = true;
 orangeButton.hidden = true;
+colorsPlane.hidden = true;
+colorsBorder.hidden = true;
 
 
 const deviceWorldTransform = DeviceMotion.worldTransform;
@@ -49,7 +60,6 @@ const block_green = Materials.get('Block_mat_green');
 const block_yellow = Materials.get('Block_mat_yellow');
 const block_purple = Materials.get('Block_mat_purple');
 const block_orange = Materials.get('Block_mat_orange');
-var mats = [block_red, block_blue, block_green, block_yellow, block_purple, block_orange]
 
 const selected_red = Materials.get('Selected_mat_red');
 const selected_blue = Materials.get('Selected_mat_blue');
@@ -58,28 +68,26 @@ const selected_yellow = Materials.get('Selected_mat_yellow');
 const selected_purple = Materials.get('Selected_mat_purple');
 const selected_orange = Materials.get('Selected_mat_orange');
 
+var mats = [block_red, block_blue, block_green, block_yellow, block_purple, block_orange]
 var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow, selected_purple, selected_orange]
 
 const add_block_mat = Materials.get('mat16')
+const red_mat = Materials.get('red_button_mat');
+const orange_mat = Materials.get('orange_button_mat');
+const yellow_mat = Materials.get('yellow_button_mat');
+const green_mat = Materials.get('green_button_mat');
+const blue_mat = Materials.get('blue_button_mat');
+const purple_mat = Materials.get('purple_button_mat');
+
+
 const selected_add_block_mat = Materials.get('selected_add_block_mat');
 
-const red_mat = Materials.get('red_button_mat');
 const selected_red_mat = Materials.get('selected_red_mat');
-
-const blue_mat = Materials.get('blue_button_mat');
-const selected_blue_mat = Materials.get('selected_blue_mat');
-
-const green_mat = Materials.get('green_button_mat');
-const selected_green_mat = Materials.get('selected_green_mat');
-
-const orange_mat = Materials.get('orange_button_mat');
 const selected_orange_mat = Materials.get('selected_orange_mat');
-
-const purple_mat = Materials.get('purple_button_mat');
-const selected_purple_mat = Materials.get('selected_purple_mat');
-
-const yellow_mat = Materials.get('yellow_button_mat');
 const selected_yellow_mat = Materials.get('selected_yellow_mat');
+const selected_green_mat = Materials.get('selected_green_mat');
+const selected_blue_mat = Materials.get('selected_blue_mat');
+const selected_purple_mat = Materials.get('selected_purple_mat');
 
 const gravity_mat = Materials.get('gravityBut_mat');
 const gravity_inverse_mat = Materials.get('gravity_inverse_mat');
@@ -96,16 +104,13 @@ const selected_ball_mat = Materials.get('selected_ball_mat');
 const car = planeTracker.child("car");
 
 const carAnimation = planeTracker.child('carAnimation');
-carButton.hidden = true;
 
 carAnimation.transform.x = car.transform.x;
 carAnimation.transform.z = car.transform.z;
-carAnimation.hidden = true;
 
 //projectile
 const sphere = planeTracker.child('Sphere')
 //const sphere2 = planeTracker.child('Sphere0')
-sphere.hidden = true;
 
 //var cameraPosX = deviceWorldTransform.x; //may not work
 //var cameraPosY = deviceWorldTransform.y;
@@ -245,6 +250,18 @@ function initWorld() {     //resets world objects and makes them all hidden
     yellowButton.hidden = true;
     purpleButton.hidden = true;
     orangeButton.hidden = true;
+    colorsPlane.hidden = true;
+    colorsBorder.hidden = true;
+    gravPlane.hidden = true;
+    gravBorder.hidden = true;
+
+
+
+
+
+
+
+
     ballButton.material = ball_mat;
     carButton.material = car_mat;
     sphereIndex = -1;
@@ -487,8 +504,10 @@ function changeMat(bid) {
             yellowButton.hidden = true;
             purpleButton.hidden = true;
             orangeButton.hidden = true;
+            colorsPlane.hidden = true;
+            colorsBorder.hidden = true;
 
-            
+
             //block.material = results[0];
             blockMesh.material = mats[blockMat[bid - 1]]
             Patches.setScalarValue('numBlock', numBlock)
@@ -515,6 +534,8 @@ function changeMat(bid) {
             yellowButton.hidden = false;
             purpleButton.hidden = false;
             orangeButton.hidden = false;
+            colorsPlane.hidden = false;
+            colorsBorder.hidden = false;
 
 
             block.worldTransform.position = blockPosObj.worldTransform.position
@@ -596,6 +617,8 @@ TouchGestures.onTap(gravityButton).subscribe(function (e) {
             changeMat(numBlock)
         ballButton.hidden = false;
         carButton.hidden = false;
+        gravPlane.hidden = false;
+        gravBorder.hidden = false;
         gravityButton.material = gravity_inverse_mat;
         blockButton.material = selected_add_block_mat;
         updatePhysicsObjects();
@@ -617,6 +640,8 @@ TouchGestures.onTap(gravityButton).subscribe(function (e) {
 
         ballButton.hidden = true;
         carButton.hidden = true;
+        gravPlane.hidden = true;
+        gravBorder.hidden = true;
         sphere.hidden = true;
         carAnimation.hidden = true;
         ballButton.material = ball_mat;
