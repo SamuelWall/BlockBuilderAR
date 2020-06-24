@@ -527,7 +527,7 @@ TouchGestures.onTap(ballButton).subscribe(function (gesture) {
 TouchGestures.onTap(carButton).subscribe(function (gesture) {
 var carinst = true
     Patches.setBooleanValue('carinst', carinst)
-    Patches.setPulseValue('carnoise', Reactive.once())
+   
     carButton.material = selected_car_mat;
     sphere.hidden = true;
     carAnimation.hidden = true;
@@ -545,11 +545,13 @@ var carinst = true
 
     if (gravity && !canShootCar) {
         setupCar();
+        Patches.setPulseValue('carnoise', Reactive.once())
         //var touchPos = Patches.getVectorValue('CarPosition');
         //carAnim.transform.x = touchPos.x
         //carAnim.transform.z = touchPos.y
     }
     else if (canShootCar) {
+       
         canShootCar = false;
         carAnimation.hidden = true;
         carButton.material = car_mat;
