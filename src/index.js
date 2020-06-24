@@ -4,8 +4,7 @@
 
 ////MODULE IMPORTS
 ////////////////////////
-import CANNON from 'cannon'
-import CannonHelper from 'spark-ar-physics'
+
 const Diagnostics = require('Diagnostics')
 const Instruction = require('Instruction')
 const CameraInfo = require('CameraInfo')
@@ -17,7 +16,8 @@ const TouchGestures = require('TouchGestures')
 const DeviceMotion = require('DeviceMotion');
 const Patches = require('Patches');
 const Random = require('Random');
-
+import CANNON from 'cannon'
+import CannonHelper from 'spark-ar-physics'
 
 ////SCENE OBJECTS
 /////////////////////////
@@ -134,12 +134,13 @@ var selectedMats = [selected_red, selected_orange, selected_yellow, selected_gre
 var blockPos = [];    //Store block materials and positions
 var blockMat = [];
 
-var newestIndex = 0;   //Keep track of game states
+var mostRecent = 0;   //Keep track of game states
 var numBlock = 0;
 var sphereIndex = -1;
 var carIndex = -1;
 var canShootSphere = false;
 var canShootCar = false;
+const blockLimit = 15;
 
 var floor;              //Physics vars
 var gravity = true;
@@ -147,7 +148,7 @@ var gravitySignal = false;
 var worldObjects = [];
 var cannonHelper;
 
-var loopTimeMs = 30;      //Timer vars
+const loopTimeMs = 30;      //Timer vars
 var lastTime;
 var updateTimer;
 var ballTimeout;
@@ -200,7 +201,7 @@ function initWorld() {
     blockPos = [];    //Reset block states and hide them
     blockMat = [];
     numBlock = 0;
-    newestIndex = 0;
+    mostRecent = 0;
     for (var b in blocks) {
         blocks[b].hidden = true;
     }
@@ -232,42 +233,44 @@ function updatePhysicsObjects(cutOff = 0) {
 function touchBlock(bid) {
     ////CHANGE MATERIAL AND SETUP MOVEMENT ON TOUCH
     //////////////////////////////////////////////
-    if (!gravity) {
+    if (!gravity) {   //If gravity is inactive
         var block = blocks[bid - 1];
         var blockMesh = block.child('Cube')
-        Patches.setPulseValue('reset', Reactive.once() )
-        if (numBlock == bid) {
-            numBlock = 0;
-
+        Patches.setPulseValue('place', Reactive.once() )   //Trigger sound
+        if (numBlock == bid) {  //If the block being tapped is already selected
+            numBlock = 0;             //Change the current block variable
+            blockMesh.material = mats[blockMat[bid - 1]]  //Change the material
+            Patches.setScalarValue('numBlock', numBlock)
             redButton.hidden = true;
             blueButton.hidden = true;
-            greenButton.hidden = true;
+            greenButton.hidden = true;  //Hide color options
             yellowButton.hidden = true;
             purpleButton.hidden = true;
             orangeButton.hidden = true;
             colorsPlane.hidden = true;
             colorsBorder.hidden = true;
 
-
-            blockMesh.material = mats[blockMat[bid - 1]]
-            Patches.setScalarValue('numBlock', numBlock)
-
-            block.transform.x = block.transform.x.pinLastValue()
+            block.transform.x = block.transform.x.pinLastValue()  //Stop moving block
             block.transform.y = block.transform.y.pinLastValue()
             block.transform.z = block.transform.z.pinLastValue()
 
         }
         else {
-            Patches.setPulseValue('select', Reactive.once())
+            Patches.setPulseValue('select', Reactive.once())  //Trigger sound
             if (numBlock != 0) {
-                blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock - 1]];
+                blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock - 1]];   //Deselect the currently selected cube if one is already selected
                 blocks[numBlock - 1].transform.x = blocks[numBlock - 1].transform.x.pinLastValue()
                 blocks[numBlock - 1].transform.y = blocks[numBlock - 1].transform.y.pinLastValue()
                 blocks[numBlock - 1].transform.z = blocks[numBlock - 1].transform.z.pinLastValue()
             }
+
+            numBlock = bid;
+            blockMesh.material = selectedMats[blockMat[bid - 1]];  //Change block var and material
+            Patches.setScalarValue('numBlock', numBlock)
+
             redButton.hidden = false;
             blueButton.hidden = false;
-            greenButton.hidden = false;
+            greenButton.hidden = false;  //Show color options
             yellowButton.hidden = false;
             purpleButton.hidden = false;
             orangeButton.hidden = false;
@@ -275,49 +278,56 @@ function touchBlock(bid) {
             colorsBorder.hidden = false;
 
 
-            block.worldTransform.position = blockPosObj.worldTransform.position
-
-            numBlock = bid;
-            blockMesh.material = selectedMats[blockMat[bid - 1]];
-            Patches.setScalarValue('numBlock', numBlock)
+            block.worldTransform.position = blockPosObj.worldTransform.position  //Block follows object that is pinned to camera
         }
     }
 }
-function resetBlockPos() {   //resets positions to before gravity sim
-    gravitySignal = false;
+
+function resetBlockPos() {
+    ////RESETS BLOCK POSITIONS TO BEFORE GRAVITY SIM
+    ////////////////////////////////////////////////
+
     gravity = true;
+    gravitySignal = false;  //Sentinel will turn off gravity after one frame (to allow blocks to reset to proper positions)
+
 
     for (var i = 1; i < blockPos.length + 1; i++) {
-        worldObjects[i].physicsObject = initBlock(blockPos[i - 1])
+        worldObjects[i].physicsObject = initBlock(blockPos[i - 1])   //Reset physics objects associated with scene objects
     }
 
-    cannonHelper = new CannonHelper(worldObjects)
+    cannonHelper = new CannonHelper(worldObjects)  //Reinitialize the physics helper object
 }
-function initBlock(position) {  //returns a physics object of a block at a passed in position
-    var blockLength = 25;
-    var blockBody = new CANNON.Body({
+
+function initBlock(position) {
+    ////RETURNS A PHYSICS OBJECT FOR A NEW BLOCK
+    ////////////////////////////////////////////
+    var blockLength = 12.5;
+    var blockBody = new CANNON.Body({ //new physics object with the following attributes
         mass: 0.2,
         position: position,
-        shape: new CANNON.Box(new CANNON.Vec3(blockLength / 4, blockLength / 4, blockLength / 4))
+        shape: new CANNON.Box(new CANNON.Vec3(blockLength / 2, blockLength / 2, blockLength / 2))
     })
 
     return blockBody;
 }
-function makeBlock() {      //makes a new block, adds it to world objects, etc
-    if (newestIndex < 15) {
-        var sceneBlock = blocks[newestIndex];
+function makeBlock() {
+    ////CREATES A NEW BLOCK
+    /////////////////////////
+
+    if (mostRecent < blockLimit) {
+        var sceneBlock = blocks[mostRecent];  //get the new block
         var Npos = new CANNON.Vec3(0, 0, 0)
-        blockPos.push(Npos)                              //calculate position of new block and add to positions array
-        var matIndex = Math.floor(Random.random() * mats.length);
+        blockPos.push(Npos)                              //add a position to the positions array
+        var matIndex = Math.floor(Random.random() * mats.length);  //
         blockMat.push(matIndex)
         // make a physics object for the block
         worldObjects.push({ sceneObject: sceneBlock, physicsObject: initBlock(Npos) });    //add it to world objects
-        touchBlock(newestIndex + 1);     //make the new block selected
+        touchBlock(mostRecent + 1);     //make the new block selected
 
 
         //updatePhysicsObjects(1);      // update physics hitboxes for all blocks
         sceneBlock.hidden = false;   //make visible
-        newestIndex++;
+        mostRecent++;
         //gravity = true;
 
         //cannonHelper = new CannonHelper(worldObjects);   //reset cannonhelper with new world objects
@@ -330,105 +340,118 @@ function makeBlock() {      //makes a new block, adds it to world objects, etc
 ////////BALL FUNCTIONS///////
 /////////////////////////////
 function initSphere(pos) {
-    var sphereBody = new CANNON.Body({
-        mass: 2, // kg
+    ////RETURNS A PHYSICS OBJECT FOR A NEW BALL
+    ////////////////////////////////////////////
+
+    var sphereBody = new CANNON.Body({ //new physics object with the following attributes
+        mass: 2,
         position: pos,
         shape: new CANNON.Sphere(1)
     })
     return sphereBody;
 }
+
 function setupSphereRot() {
-    sphere.worldTransform.position = posObject.worldTransform.position;
-    if(ballTimeout != undefined)
+    ////MAKE SPHERE FOLLOW CAMERA
+    /////////////////////////////
+
+    sphere.worldTransform.position = posObject.worldTransform.position; //Set pos of sphere to pos of object pinned to cam
+    if(ballTimeout != undefined)  //Clear ball hide timeout
         Time.clearTimeout(ballTimeout)
 }
-function setupSphere() {
-    sphere.hidden = false;
 
+function setupSphere() {
+    ////GET BALL READY TO FIRE
+    //////////////////////////
+
+    sphere.hidden = false;
     ballButton.material = selected_ball_mat;
-    setupSphereRot();
-    if (sphereIndex != -1) {
+    setupSphereRot();  //Make the ball follow the cam
+    if (sphereIndex != -1) {  //If the ball already exists as a physics object, delete it
         worldObjects.splice(sphereIndex, 1);
         sphereIndex = -1;
-        //setupSphereRot();
     }
 
     canShootSphere = true;
-
 }
-function fireSphere() {
-    canShootSphere = false;
-    //sphere2.hidden = false;
-    var spherePos = new CANNON.Vec3(sphere.transform.x.pinLastValue(), sphere.transform.y.pinLastValue(), sphere.transform.z.pinLastValue());
-    var cannonSphere = initSphere(spherePos);
-    worldObjects.push({ sceneObject: sphere, physicsObject: cannonSphere })
-    cannonHelper = new CannonHelper(worldObjects)
-    sphereIndex = worldObjects.length - 1;
 
-    //var camRotY = deviceWorldTransform.rotationY
-    var sphereforceX = Reactive.sin(camRotY).pinLastValue() * Reactive.cos(camRotX).pinLastValue();
+function fireSphere() {
+    ////SHOOT THE BALL
+    //////////////////
+
+    canShootSphere = false;  //Dont let it shoot twice
+    var spherePos = new CANNON.Vec3(sphere.transform.x.pinLastValue(), sphere.transform.y.pinLastValue(), sphere.transform.z.pinLastValue());
+    var cannonSphere = initSphere(spherePos);   //Make a new physics object at the correct position
+    worldObjects.push({ sceneObject: sphere, physicsObject: cannonSphere }) //Add it to the other physics objects
+    cannonHelper = new CannonHelper(worldObjects)
+    sphereIndex = worldObjects.length - 1;  //Remember the index of the sphere in the physics object array
+
+    var sphereforceX = Reactive.sin(camRotY).pinLastValue() * Reactive.cos(camRotX).pinLastValue();  //Calculate the force vector
     var sphereforceZ = Reactive.cos(camRotY).pinLastValue() * Reactive.cos(camRotX).pinLastValue();
     var sphereforceY = Reactive.sin(camRotX).pinLastValue();
 
-    var sphereForce = new CANNON.Vec3(sphereforceX * -500, sphereforceY * 500, sphereforceZ * -500)
-
+    var sphereForce = new CANNON.Vec3(sphereforceX * -500, sphereforceY * 500, sphereforceZ * -500)  //Apply it
     cannonSphere.applyLocalImpulse(sphereForce, spherePos)
-    cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
-    ballTimeout = Time.setTimeout(function () { sphere.hidden = true}, 1500);
+    cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)  //Stop spin
 
+    ballTimeout = Time.setTimeout(function () { sphere.hidden = true}, 1500);  //Hide the ball after 1.5 seconds
 }
-
 
 ////////////////////////////
 ////////CAR FUNCTIONS///////
 ////////////////////////////
 
 function initCar(carpos) {
-    var carBody = new CANNON.Body({
+    ////RETURNS A PHYSICS OBJECT FOR A NEW CAR
+    ////////////////////////////////////////////
+
+    var carBody = new CANNON.Body({  //new physics object with the following attributes
         mass: 2, // kg
         position: carpos,
         shape: new CANNON.Sphere(40)
     })
     return carBody;
 }
+
 function setupCarPos() {
+    ////MOVE THE CAR
+    /////////////////
     var touchPos = Patches.getVectorValue('CarPosition');
     car.transform.x = touchPos.x;
     car.transform.y = touchPos.y
 }
+
 function setupCar() {
+    ////GET CAR READY TO FIRE
+    /////////////////////////
+
     carButton.material = selected_car_mat;
     carAnimation.hidden = false;
     car.transform.x = Reactive.val(0);
     car.transform.y = Reactive.val(0);
-    car.transform.z = Reactive.val(60);
+    car.transform.z = Reactive.val(60);   //Initialize pos to (0,0,60)
 
-
-
-    if (carIndex != -1) {
+    if (carIndex != -1) {  //If the car physics object already exists, delete it
         worldObjects.splice(carIndex, 1);
         carIndex = -1;
     }
-
     canShootCar = true;
-
 }
-function fireCar() {
-    canShootCar = false;
-    var carPos = new CANNON.Vec3(car.transform.x.lastValue, 470, car.transform.z.lastValue)
-    //var spherePos = new CANNON.Vec3(sphere.transform.x.pinLastValue(), sphere.transform.y.pinLastValue(), sphere.transform.z.pinLastValue());
-    var cannonCar = initCar(carPos);
-    worldObjects.push({ sceneObject: car, physicsObject: cannonCar })
-    cannonHelper = new CannonHelper(worldObjects)
-    carIndex = worldObjects.length - 1;
 
-    //var camRotY = deviceWorldTransform.rotationY
+function fireCar() {
+    ////SHOOT THE CAR
+    /////////////////
+
+    canShootCar = false;  //Don't let the car fire twice
+    var carPos = new CANNON.Vec3(car.transform.x.lastValue, 41, car.transform.z.lastValue)
+    var cannonCar = initCar(carPos);  //Make a new physics object at the correct position
+    worldObjects.push({ sceneObject: car, physicsObject: cannonCar })
+    carIndex = worldObjects.length - 1;  //Remember the index of the sphere in the physics object array
+    cannonHelper = new CannonHelper(worldObjects)
 
 
     var carForce = new CANNON.Vec3(0, 0, -500)
-
-    cannonCar.applyLocalImpulse(carForce, carPos)
-    // cannonSphere.angularVelocity = new CANNON.Vec3(0, 0, 0)
+    cannonCar.applyLocalImpulse(carForce, carPos)  //Add a forward force
 }
 
 
@@ -437,97 +460,114 @@ function fireCar() {
 ////////TOUCH GESTURES///////
 /////////////////////////////
 
+
 TouchGestures.onPan().subscribe(function (gesture) {
-    //moveBlock(numBlock- 1);
+    ////MOVE CAR ON PAN
+    ///////////////////
+
     setupCarPos();
 });
+
+
 TouchGestures.onTap(blockButton).subscribe(function (gesture) {
-    if (!gravitySignal) {
-        makeBlock();
-        blockButton.material = selected_add_block_mat;
-        Time.setTimeout(function () { blockButton.material = add_block_mat }, 125);
-        //updatePhysicsObjects();
+    ////TAP THE NEW BLOCK BUTTON
+    ////////////////////////////
+
+    if (!gravitySignal) {  //If gravity is off
+        makeBlock();       //Make a new block
+        blockButton.material = selected_add_block_mat;   //Change the button to clicked mat
+        Time.setTimeout(function () { blockButton.material = add_block_mat }, 125); //Change it back after .125 seconds
     }
 });
-TouchGestures.onTap(gravityButton).subscribe(function (e) {
 
-    if (!gravitySignal) {
-        if (numBlock != 0)
-            touchBlock(numBlock)
-        ballButton.hidden = false;
+TouchGestures.onTap(gravityButton).subscribe(function (e) {
+    ////TAP THE GRAVITY BUTTON
+    //////////////////////////
+
+    if (!gravitySignal) { //If gravity is off (turn it on)
+        ballButton.hidden = false;  //Show the relevant buttons
         carButton.hidden = false;
         gravPlane.hidden = false;
         gravBorder.hidden = false;
         gravityButton.material = gravity_inverse_mat;
         blockButton.material = selected_add_block_mat;
-        updatePhysicsObjects();
-        gravitySignal = true;
+
+        if (numBlock != 0)  //If a block is selected, unselect it
+            touchBlock(numBlock)
+
+        updatePhysicsObjects(); //Update the block physics objects to the scene positions
+        gravitySignal = true;  //Turn on gravity
     }
-    else {
+    else {  //If gravity is on (turn it off)
         if (sphereIndex != -1)
-            worldObjects.splice(sphereIndex, 1)
+            worldObjects.splice(sphereIndex, 1)  //Remove the sphere if it exists
         sphereIndex = -1;
-        setupSphereRot();
+        setupSphereRot();  //Bring the sphere back in case it has been shot
         canShootSphere = false;
 
-        if (carIndex != -1)
+        if (carIndex != -1)   //Do the same with the car
             worldObjects.splice(carIndex, 1)
         carIndex = -1;
         carButton.material = car_mat;
-        //carAnimation.hidden = true;
         canShootCar = false
 
-        ballButton.hidden = true;
+        ballButton.hidden = true;  //Hide the buttons and destruction objects
         carButton.hidden = true;
         gravPlane.hidden = true;
         gravBorder.hidden = true;
         sphere.hidden = true;
         carAnimation.hidden = true;
-        ballButton.material = ball_mat;
+
+        ballButton.material = ball_mat;   //Make the button materials not clicked
         blockButton.material = add_block_mat;
         gravityButton.material = gravity_mat;
 
-        resetBlockPos();
+        resetBlockPos(); //Reset the block positions to what they were before gravity
     }
-
-
 })
+
 TouchGestures.onTap(resetButton).subscribe(function (gesture) {
-    resetButton.material = selected_reset_mat;
-    Time.setTimeout(function () { resetButton.material = reset_mat }, 125);
-    initWorld();
+    ////TAP THE RESET BUTTON
+    ////////////////////////
 
-
-
+    resetButton.material = selected_reset_mat;  //Change the button mat to clicked
+    Time.setTimeout(function () { resetButton.material = reset_mat }, 125); //Change it back later
+    initWorld();  //Reset to a blank world
 })
 
 TouchGestures.onTap(ballButton).subscribe(function (gesture) {
-    sphere.hidden = true;
-    carAnimation.hidden = true;
+    ////TAP THE SHOOT BALL BUTTON
+    /////////////////////////////
+    sphere.hidden = true;    //Hide the sphere in case it's already shown
+    carAnimation.hidden = true;  //Hide the car and disable it
     canShootCar = false;
-    ballButton.material = selected_ball_mat;
-    carButton.material = car_mat;
+    ballButton.material = selected_ball_mat; //Change the ball button to clicked
+    carButton.material = car_mat;    //Unselect the car button
 
-    if (carIndex != -1) {
+    if (carIndex != -1) {   //If the car exists, remove it
         worldObjects.splice(carIndex, 1)
         carIndex = -1;
         //carAnimation.hidden = true;
     }
 
-    if (gravity && !canShootSphere)
+    if (gravity && !canShootSphere)  // Setup the ball if not done yet
         setupSphere();
 
-    else if (canShootSphere) {
-        canShootSphere = false;
+    else if (canShootSphere) {  //Remove the ball if clicked again
+        canShootSphere = false; //And don't let it fire
         sphere.hidden = true;
         ballButton.material = ball_mat;
 
     }
 });
 TouchGestures.onTap(carButton).subscribe(function (gesture) {
-var carinst = true
+    ////TAP THE CAR BUTTON
+    //////////////////////
+
+    var carinst = true
     Patches.setBooleanValue('carinst', carinst)
-   
+    Patches.setPulseValue('carnoise', Reactive.once())
+
     carButton.material = selected_car_mat;
     sphere.hidden = true;
     carAnimation.hidden = true;
@@ -545,13 +585,11 @@ var carinst = true
 
     if (gravity && !canShootCar) {
         setupCar();
-        Patches.setPulseValue('carnoise', Reactive.once())
         //var touchPos = Patches.getVectorValue('CarPosition');
         //carAnim.transform.x = touchPos.x
         //carAnim.transform.z = touchPos.y
     }
     else if (canShootCar) {
-       
         canShootCar = false;
         carAnimation.hidden = true;
         carButton.material = car_mat;
@@ -559,30 +597,32 @@ var carinst = true
 });
 
 TouchGestures.onTap().subscribe(function (gesture) {
-    if (canShootSphere) {
-        fireSphere();
-        Patches.setPulseValue('wooshtrig', Reactive.once())
-    }
+    ////TAP ON THE SCREEN
+    /////////////////////
+
+    if (canShootSphere)
+        fireSphere();  //Fire the ball
     else if (sphereIndex != -1) {
-        setupSphere();
-        Patches.setPulseValue('reload', Reactive.once())
+        setupSphere();  //If the ball exists already reset it
+        Patches.setPulseValue('reload', Reactive.once()) //Play the sound
     }
     else if (canShootCar) {
-        fireCar();
-        Patches.setPulseValue('acceleration', Reactive.once())
+        fireCar();  //Fire the car
+        Patches.setPulseValue('acceleration', Reactive.once())  //Play the sound
     }
-    else if (carIndex != -1) {
+    else if (carIndex != -1) {  //If the car exists already reset it
         setupCar();
     }
 });
 
-
+////TAP ON THE COLOR BUTTONS
+////////////////////////////
 TouchGestures.onTap(redButton).subscribe(function (gesture) {
     if (numBlock != 0) {
-        blockMat[numBlock - 1] = 0;
-        blocks[numBlock - 1].child('Cube').material = selectedMats[0];
-        redButton.material = selected_red_mat;
-        Time.setTimeout(function () { redButton.material = red_mat }, 125);
+        blockMat[numBlock - 1] = 0;  //Change the saved mat for that block
+        blocks[numBlock - 1].child('Cube').material = selectedMats[0];  //Change its material
+        redButton.material = selected_red_mat;    //Set the color button to selected
+        Time.setTimeout(function () { redButton.material = red_mat }, 125); //Change it back later
     }
 
 });
@@ -612,7 +652,7 @@ TouchGestures.onTap(yellowButton).subscribe(function (gesture) {
 });
 TouchGestures.onTap(purpleButton).subscribe(function (gesture) {
     if (numBlock != 0) {
-        blockMat[numBlock - 1] = 3;
+        blockMat[numBlock - 1] = 4;
         blocks[numBlock - 1].child('Cube').material = selectedMats[4];
         purpleButton.material = selected_purple_mat;
         Time.setTimeout(function () { purpleButton.material = purple_mat }, 125);
@@ -620,7 +660,7 @@ TouchGestures.onTap(purpleButton).subscribe(function (gesture) {
 });
 TouchGestures.onTap(orangeButton).subscribe(function (gesture) {
     if (numBlock != 0) {
-        blockMat[numBlock - 1] = 3;
+        blockMat[numBlock - 1] = 5;
         blocks[numBlock - 1].child('Cube').material = selectedMats[5];
         orangeButton.material = selected_orange_mat;
         Time.setTimeout(function () { orangeButton.material = orange_mat }, 125);
@@ -634,6 +674,9 @@ for(var i = 0; i < blocks.length; i++){
   });
 }
 */
+
+////TAP GESTURE FOR EACH BLOCK
+//////////////////////////////
 TouchGestures.onTap(blocks[0]).subscribe(function (gesture) {
     touchBlock(1);
 });
@@ -680,22 +723,23 @@ TouchGestures.onTap(blocks[14]).subscribe(function (gesture) {
     touchBlock(15);
 });
 
-
+////PHYSICS UPDATE LOOP
+///////////////////////
 Time.ms.interval(loopTimeMs).subscribe(function (elapsedTime) {
     if (lastTime !== undefined) {
         var deltaTime = (elapsedTime - lastTime) / 1000
 
 
-        if (gravity) {
+        if (gravity) {  //Update if gravity is on
             cannonHelper.update(deltaTime)
         }
 
-        gravity = gravitySignal;
+        gravity = gravitySignal;  //Turn off gravity if gravity signal is off
 
 
     }
 
-    lastTime = elapsedTime
+    lastTime = elapsedTime  //Time logic
 })
 
-initWorld();
+initWorld();  //Setup the world and get started!
