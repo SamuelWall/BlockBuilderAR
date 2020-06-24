@@ -1,5 +1,11 @@
+//////////////////////////////
+/////////GLOBAL SETUP/////////
+//////////////////////////////
+
 ////MODULE IMPORTS
 ////////////////////////
+import CANNON from 'cannon'
+import CannonHelper from 'spark-ar-physics'
 const Diagnostics = require('Diagnostics')
 const Instruction = require('Instruction')
 const CameraInfo = require('CameraInfo')
@@ -15,7 +21,7 @@ const Random = require('Random');
 
 ////SCENE OBJECTS
 /////////////////////////
-const root = Scene.root;
+const root = Scene.root;    //Utility objects
 const fd = Scene.root
     .child('Device')
     .child('Camera')
@@ -23,7 +29,20 @@ const fd = Scene.root
 const canvas = fd.child('canvas0')
 const planeTracker = root.child('planeTracker0')
 const camera = root.child('Device').child('Camera');
-const blockButton = canvas.child('blockButton');
+const posObject = camera.child('positionObject')
+const blockPosObj = camera.child('blockPositionObject')
+const planeTrackObj = planeTracker.child('planePos')
+const floorPlane = planeTracker.child('plane0')
+const deviceWorldTransform = DeviceMotion.worldTransform;
+var camPosX = deviceWorldTransform.position.x;
+var camPosY = deviceWorldTransform.position.y;
+var camPosZ = deviceWorldTransform.position.z;
+var camRotX = deviceWorldTransform.rotationX;
+var camRotY = deviceWorldTransform.rotationY;
+var camRotZ = deviceWorldTransform.rotationZ;
+
+
+const blockButton = canvas.child('blockButton');    //Buttons
 const gravityButton = canvas.child('gravityButton');
 const resetButton = canvas.child('resetButton');
 const ballButton = canvas.child('ballButton');
@@ -34,44 +53,43 @@ const yellowButton = canvas.child('yellowButton')
 const purpleButton = canvas.child('purpleButton')
 const orangeButton = canvas.child('orangeButton')
 const carButton = canvas.child('carButton');
-const buttonsPlane = canvas.child('buttonsPlane')
+
+const buttonsPlane = canvas.child('buttonsPlane')   //Button containers
 const buttonsBorder = canvas.child('buttonsBorder')
 const colorsPlane = canvas.child('colorsPlane')
 const colorsBorder = canvas.child('colorsBorder')
 const gravPlane = canvas.child('gravPlane')
 const gravBorder = canvas.child('gravBorder')
 
-
-redButton.hidden = true;
-blueButton.hidden = true;
-greenButton.hidden = true;
-yellowButton.hidden = true;
-purpleButton.hidden = true;
-orangeButton.hidden = true;
-colorsPlane.hidden = true;
-colorsBorder.hidden = true;
+const sphere = planeTracker.child('Sphere')
+const car = planeTracker.child("car");   //Destruction objects
+const carAnimation = planeTracker.child('carAnimation');
 
 
-const deviceWorldTransform = DeviceMotion.worldTransform;
+const block1 = planeTracker.child('Block1')   //Blocks
+const block2 = planeTracker.child('Block2')
+const block3 = planeTracker.child('Block3')
+const block4 = planeTracker.child('Block4')
+const block5 = planeTracker.child('Block5')
+const block6 = planeTracker.child('Block6')
+const block7 = planeTracker.child('Block7')
+const block8 = planeTracker.child('Block8')
+const block9 = planeTracker.child('Block9')
+const block10 = planeTracker.child('Block10')
+const block11 = planeTracker.child('Block11')
+const block12 = planeTracker.child('Block12')
+const block13 = planeTracker.child('Block13')
+const block14 = planeTracker.child('Block14')
+const block15 = planeTracker.child('Block15')
 
-const block_red = Materials.get('Block_mat_red');
-const block_blue = Materials.get('Block_mat_blue');
-const block_green = Materials.get('Block_mat_green');
-const block_yellow = Materials.get('Block_mat_yellow');
-const block_purple = Materials.get('Block_mat_purple');
-const block_orange = Materials.get('Block_mat_orange');
 
-const selected_red = Materials.get('Selected_mat_red');
-const selected_blue = Materials.get('Selected_mat_blue');
-const selected_green = Materials.get('Selected_mat_green');
-const selected_yellow = Materials.get('Selected_mat_yellow');
-const selected_purple = Materials.get('Selected_mat_purple');
-const selected_orange = Materials.get('Selected_mat_orange');
-
-var mats = [block_red, block_blue, block_green, block_yellow, block_purple, block_orange]
-var selectedMats = [selected_red, selected_blue, selected_green, selected_yellow, selected_purple, selected_orange]
-
-const add_block_mat = Materials.get('mat16')
+////OBJECT MATERIALS
+/////////////////////
+const add_block_mat = Materials.get('mat16')      //Buttons
+const gravity_mat = Materials.get('gravityBut_mat');
+const reset_mat = Materials.get('floor');
+const car_mat = Materials.get('car_button_mat');
+const ball_mat = Materials.get('ball_button_mat');
 const red_mat = Materials.get('red_button_mat');
 const orange_mat = Materials.get('orange_button_mat');
 const yellow_mat = Materials.get('yellow_button_mat');
@@ -79,9 +97,11 @@ const green_mat = Materials.get('green_button_mat');
 const blue_mat = Materials.get('blue_button_mat');
 const purple_mat = Materials.get('purple_button_mat');
 
-
-const selected_add_block_mat = Materials.get('selected_add_block_mat');
-
+const selected_add_block_mat = Materials.get('selected_add_block_mat');  //Selected buttons
+const gravity_inverse_mat = Materials.get('gravity_inverse_mat');
+const selected_reset_mat = Materials.get('selected_reset_mat');
+const selected_car_mat = Materials.get('selected_car_mat');
+const selected_ball_mat = Materials.get('selected_ball_mat');
 const selected_red_mat = Materials.get('selected_red_mat');
 const selected_orange_mat = Materials.get('selected_orange_mat');
 const selected_yellow_mat = Materials.get('selected_yellow_mat');
@@ -89,161 +109,80 @@ const selected_green_mat = Materials.get('selected_green_mat');
 const selected_blue_mat = Materials.get('selected_blue_mat');
 const selected_purple_mat = Materials.get('selected_purple_mat');
 
-const gravity_mat = Materials.get('gravityBut_mat');
-const gravity_inverse_mat = Materials.get('gravity_inverse_mat');
+const block_red = Materials.get('Block_mat_red');      //Block materials
+const block_orange = Materials.get('Block_mat_orange');
+const block_yellow = Materials.get('Block_mat_yellow');
+const block_green = Materials.get('Block_mat_green');
+const block_blue = Materials.get('Block_mat_blue');
+const block_purple = Materials.get('Block_mat_purple');
 
-const reset_mat = Materials.get('floor');
-const selected_reset_mat = Materials.get('selected_reset_mat');
-
-const car_mat = Materials.get('car_button_mat');
-const selected_car_mat = Materials.get('selected_car_mat');
-
-const ball_mat = Materials.get('ball_button_mat');
-const selected_ball_mat = Materials.get('selected_ball_mat');
-
-const car = planeTracker.child("car");
-
-const carAnimation = planeTracker.child('carAnimation');
-
-carAnimation.transform.x = car.transform.x;
-carAnimation.transform.z = car.transform.z;
-
-//projectile
-const sphere = planeTracker.child('Sphere')
-//const sphere2 = planeTracker.child('Sphere0')
-
-//var cameraPosX = deviceWorldTransform.x; //may not work
-//var cameraPosY = deviceWorldTransform.y;
-//var cameraPosZ = deviceWorldTransform.z;
-var devicePosX = deviceWorldTransform.position.x;
-var devicePosY = deviceWorldTransform.position.y;
-var devicePosZ = deviceWorldTransform.position.z;
-//device rotation
-var camRotX = deviceWorldTransform.rotationX;
-var camRotY = deviceWorldTransform.rotationY;
-var camRotZ = deviceWorldTransform.rotationZ;
-
-var ballTimeout;
-
-//var pointSig = Patches.getPointValue('zeroPointSignal')
-//Diagnostics.log(pointSig.x.lastValue,pointSig.y.lastValue,pointSig.z.lastValue)
-/*function setupSphereRot(){
-    //projectile transform
-
-    var sphereDistance = 1;
-    // x position of cube orbit
-    var spherePosX = Reactive.mul(Reactive.mul(sphereDistance, Reactive.sin(camRotY)),Reactive.cos(camRotX));
-    // y position of cube orbit + offset
-    //var spherePosY = Reactive.add(Reactive.mul(sphereDistance, Reactive.sin(camRotX)), .5);
-    var spherePosY = Reactive.mul(sphereDistance, Reactive.sin(camRotX));
-    //var spherePosY = Reactive.mul(sphereDistance + .5, Reactive.sin(camRotX));
-    // z position of cube orbit
-    var spherePosZ = Reactive.mul(Reactive.mul(sphereDistance, Reactive.cos(camRotY)),Reactive.cos(camRotX));
-
-    // adjusting for difference in coordinates
-    var resetZ = Reactive.mul(100,Reactive.add(1.7, devicePosZ));
-    // orbit position + offset from device position if z > 1
-    //var newSpherePosX = Reactive.add(Reactive.neg(spherePosX), cameraPosX);
-    //var newSpherePosY = Reactive.add(spherePosY, cameraPosY);
-    //if z > 0
-    //var newSpherePosZ = Reactive.add(Reactive.neg(spherePosZ), resetZ);
-    var newSpherePosX = Reactive.add(Reactive.neg(Reactive.mul(spherePosX,100)), Reactive.mul(100,devicePosX));
-    var newSpherePosY = Reactive.add(Reactive.mul(spherePosY,100), Reactive.mul(100,Reactive.add(devicePosY, .5)));
-    //if z > 0
-    var newSpherePosZ = Reactive.add(Reactive.add(Reactive.neg(Reactive.mul(spherePosZ,100)), resetZ), -40);
-    //if z = 0
-    //var newzn = Reactive.add(spherePosZ, resetZ);
-    //hides cube/cube2 if (cube > 0)/(cube2 < 3)
-    //setting cube transforms
-    sphere.transform.x = newSpherePosX//.mul(100);
-    sphere.transform.y = newSpherePosY//.mul(100);
-    sphere.transform.z = newSpherePosZ//.mul(100);
-}*/
-var canShootSphere = false;
-//setupSphereRot();
-
-function setupCarPos() {
-
-    var touchPos = Patches.getVectorValue('CarPosition');
+const selected_red = Materials.get('Selected_mat_red');   //Selected block mats
+const selected_orange = Materials.get('Selected_mat_orange');
+const selected_yellow = Materials.get('Selected_mat_yellow');
+const selected_green = Materials.get('Selected_mat_green');
+const selected_blue = Materials.get('Selected_mat_blue');
+const selected_purple = Materials.get('Selected_mat_purple');
 
 
-    // Get the angle of the camera
-    //  var yRot = deviceWorldTransform.rotationY;
+////GLOBAL VARS
+/////////////////
 
-    //var NewXPos =  Reactive.mul(Reactive.cos(yRot), touchPos.x);
+var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12, block13, block14, block15];
+var mats = [block_red, block_orange, block_yellow, block_green, block_blue, block_purple];
+var selectedMats = [selected_red, selected_orange, selected_yellow, selected_green, selected_blue, selected_purple];    //Arrays of assets
 
-
-
-    car.transform.x = touchPos.x;
-    car.transform.y = touchPos.y
-
-}
-var canShootCar = false;
-
-
-import CANNON from 'cannon'
-import CannonHelper from 'spark-ar-physics'
-Instruction.bind(CameraInfo.captureDevicePosition.eq(CameraInfo.CameraPosition.FRONT), 'flip_camera')
-
-var posObject = camera.child('positionObject')
-var blockPosObj = camera.child('blockPositionObject')
-var planeTrackObj = planeTracker.child('planePos')
-var floorPlane = planeTracker.child('plane0')
-var block1 = planeTracker.child('Block1')
-var block2 = planeTracker.child('Block2')
-var block3 = planeTracker.child('Block3')
-var block4 = planeTracker.child('Block4')
-var block5 = planeTracker.child('Block5')
-var block6 = planeTracker.child('Block6')
-var block7 = planeTracker.child('Block7')
-var block8 = planeTracker.child('Block8')
-var block9 = planeTracker.child('Block9')
-var block10 = planeTracker.child('Block10')
-var block11 = planeTracker.child('Block11')
-var block12 = planeTracker.child('Block12')
-var block13 = planeTracker.child('Block13')
-var block14 = planeTracker.child('Block14')
-var block15 = planeTracker.child('Block15')
-
-var blocks = [block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12, block13, block14, block15]
-var newestIndex = 0;
-var blockPos = [];
+var blockPos = [];    //Store block materials and positions
 var blockMat = [];
-var blockWT = [];
-//var touchPos = Reactive.vector(Reactive.val(0),Reactive.val(0),Reactive.val(0))
 
+var newestIndex = 0;   //Keep track of game states
 var numBlock = 0;
 var sphereIndex = -1;
 var carIndex = -1;
+var canShootSphere = false;
+var canShootCar = false;
 
-var worldObjects = [];
-var floor;
+var floor;              //Physics vars
 var gravity = true;
 var gravitySignal = false;
-
+var worldObjects = [];
 var cannonHelper;
-var loopTimeMs = 30;
+
+var loopTimeMs = 30;      //Timer vars
 var lastTime;
-
 var updateTimer;
+var ballTimeout;
 
-function initWorld() {     //resets world objects and makes them all hidden
-    gravitySignal = false;
-    gravity = true;
 
-    gravityButton.material = gravity_mat;
+////MISC SETUP
+/////////////////
+
+carAnimation.transform.x = car.transform.x;
+carAnimation.transform.z = car.transform.z;
+Instruction.bind(CameraInfo.captureDevicePosition.eq(CameraInfo.CameraPosition.FRONT), 'flip_camera')
+
+
+
+//////////////////////////////
+////////GAME FUNCTIONS////////
+//////////////////////////////
+
+
+function initWorld() {
+    ////INITIALIZES GAME STATE
+    //////////////////////////
+
+    gravitySignal = false;   //Sentinel value turns off gravity after one frame
+    gravity = true;          //Turn on gravity
+
+    gravityButton.material = gravity_mat; //Reset button materials
+    ballButton.material = ball_mat;
     ballButton.material = ball_mat;
     carButton.material = car_mat;
 
+    sphere.hidden = true;    //Hide destruction objects and some buttons
+    carAnimation.hidden = true;
     carButton.hidden = true;
     ballButton.hidden = true;
-    floor = CannonHelper.makeFloor();
-
-    worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
-    canShootSphere = false;
-    canShootCar = false;
-    sphere.hidden = true;
-    carAnimation.hidden = true;
     redButton.hidden = true;
     blueButton.hidden = true;
     greenButton.hidden = true;
@@ -255,37 +194,93 @@ function initWorld() {     //resets world objects and makes them all hidden
     gravPlane.hidden = true;
     gravBorder.hidden = true;
 
+    canShootSphere = false;   //Disable destruction objects
+    canShootCar = false;
 
-
-
-
-
-
-
-    ballButton.material = ball_mat;
-    carButton.material = car_mat;
-    sphereIndex = -1;
-    carIndex = -1;
-    blockPos = [];
+    blockPos = [];    //Reset block states and hide them
     blockMat = [];
     numBlock = 0;
     newestIndex = 0;
     for (var b in blocks) {
         blocks[b].hidden = true;
     }
+
+    floor = CannonHelper.makeFloor();     //Initialize base physics objects
+    worldObjects = [{ sceneObject: floorPlane, physicsObject: floor }];
+    sphereIndex = -1;
+    carIndex = -1;
     cannonHelper = new CannonHelper(worldObjects);
 }
-function updatePhysicsObjects(cutOff = 0) {    //Updates the positions of the block physics objects (hitboxes)
+function updatePhysicsObjects(cutOff = 0) {
+    /////UPDATES PHYSICS OBJECTS TO SCENE POSITIONS
+    ///////////////////////////////////////////////
+
     for (var b = 0; b < blockPos.length - cutOff; b++) {
         var block = blocks[b];
+        blockPos[b] = new CANNON.Vec3(block.transform.x.lastValue, block.transform.y.lastValue, block.transform.z.lastValue)  //Update each block's position
+        worldObjects[b + 1].physicsObject = initBlock(blockPos[b])  //Update physics array
+        cannonHelper = new CannonHelper(worldObjects)          //Reset the physics class
+    }
+}
 
 
-        blockPos[b] = new CANNON.Vec3(block.transform.x.lastValue, block.transform.y.lastValue, block.transform.z.lastValue)
-        worldObjects[b + 1].physicsObject = initBlock(blockPos[b])
 
-        cannonHelper = new CannonHelper(worldObjects)
+//////////////////////////////
+////////BLOCK FUNCTIONS///////
+//////////////////////////////
+
+function touchBlock(bid) {
+    ////CHANGE MATERIAL AND SETUP MOVEMENT ON TOUCH
+    //////////////////////////////////////////////
+    if (!gravity) {
+        var block = blocks[bid - 1];
+        var blockMesh = block.child('Cube')
+        Patches.setPulseValue('reset', Reactive.once() )
+        if (numBlock == bid) {
+            numBlock = 0;
+
+            redButton.hidden = true;
+            blueButton.hidden = true;
+            greenButton.hidden = true;
+            yellowButton.hidden = true;
+            purpleButton.hidden = true;
+            orangeButton.hidden = true;
+            colorsPlane.hidden = true;
+            colorsBorder.hidden = true;
 
 
+            blockMesh.material = mats[blockMat[bid - 1]]
+            Patches.setScalarValue('numBlock', numBlock)
+
+            block.transform.x = block.transform.x.pinLastValue()
+            block.transform.y = block.transform.y.pinLastValue()
+            block.transform.z = block.transform.z.pinLastValue()
+
+        }
+        else {
+            Patches.setPulseValue('select', Reactive.once())
+            if (numBlock != 0) {
+                blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock - 1]];
+                blocks[numBlock - 1].transform.x = blocks[numBlock - 1].transform.x.pinLastValue()
+                blocks[numBlock - 1].transform.y = blocks[numBlock - 1].transform.y.pinLastValue()
+                blocks[numBlock - 1].transform.z = blocks[numBlock - 1].transform.z.pinLastValue()
+            }
+            redButton.hidden = false;
+            blueButton.hidden = false;
+            greenButton.hidden = false;
+            yellowButton.hidden = false;
+            purpleButton.hidden = false;
+            orangeButton.hidden = false;
+            colorsPlane.hidden = false;
+            colorsBorder.hidden = false;
+
+
+            block.worldTransform.position = blockPosObj.worldTransform.position
+
+            numBlock = bid;
+            blockMesh.material = selectedMats[blockMat[bid - 1]];
+            Patches.setScalarValue('numBlock', numBlock)
+        }
     }
 }
 function resetBlockPos() {   //resets positions to before gravity sim
@@ -308,77 +303,16 @@ function initBlock(position) {  //returns a physics object of a block at a passe
 
     return blockBody;
 }
-var newBlockPosX;
-var newBlockPosY;
-var newBlockPosZ;
-//var lastCamRotX;
-var lastCamRotY;
-var lastCamRotZ;
-
-
 function makeBlock() {      //makes a new block, adds it to world objects, etc
     if (newestIndex < 15) {
         var sceneBlock = blocks[newestIndex];
-
-        /*lastCamRotY = camRotY.lastValue
-        lastCamRotZ = camRotZ.lastValue
-        var pseudoRadius = 150;
-        var offsetX = (devicePosX.lastValue/2) * 100;
-        newBlockPosX = (-pseudoRadius*Math.sin(lastCamRotY)+(devicePosX.lastValue*pseudoRadius)) - offsetX;
-        newBlockPosY = (devicePosY.lastValue*pseudoRadius) + 10;
-        var neg = 1
-        var objectWorldPosZ = devicePosZ.lastValue + 1.5;
-        var offsetZ = pseudoRadius - (devicePosZ.lastValue / 2)*150 ;
-        var latterOffset = 0
-        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
-            neg = -1;
-            latterOffset = 2 * objectWorldPosZ * 100;
-            //offsetZ = 20;
-            //if (cameraPosZ.lastValue < 0) {
-            //    neg = 1;
-            //}
-
-        }
-
-
-        newBlockPosZ = neg*(-pseudoRadius*Math.cos(lastCamRotY)+(devicePosZ.lastValue*pseudoRadius) + offsetZ) + latterOffset//+ cameraPosZ.lastValue;
-
-        //var Npos = new CANNON.Vec3((Math.sin(lastCamRotY)*newBlockPosX), newBlockPosY + 10, (Math.cos(lastCamRotY)*newBlockPosY));
-
-        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ);*/
-        /*
-        lastCamRotY = camRotY.lastValue
-        lastCamRotZ = camRotZ.lastValue
-
-        newBlockPosX = ((Math.sin(lastCamRotY)+ devicePosX.lastValue) * -1.5 + 2*devicePosX.lastValue + (devicePosX.lastValue * .5))*100
-        newBlockPosY = devicePosY.lastValue * 100;
-        var neg = 1
-        var objectWorldPosZ = (devicePosZ.lastValue + 0) * 1;
-
-        var latterOffset = 0
-        if(Math.abs(lastCamRotZ) > Math.PI / 2) {
-            neg = -1;
-            latterOffset = 2 * objectWorldPosZ - latterOffset;
-            //offsetZ = 20;
-
-
-        }
-        newBlockPosZ = (neg*((Math.cos(lastCamRotY) * -1.5) + objectWorldPosZ) + latterOffset + 1.7) * 100
-
-        var Npos = new CANNON.Vec3(newBlockPosX, newBlockPosY, newBlockPosZ); */
         var Npos = new CANNON.Vec3(0, 0, 0)
-        /*sceneBlock.transform.x = Reactive.sub(posObject.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
-        sceneBlock.transform.y = Reactive.sub(posObject.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
-        sceneBlock.transform.z = Reactive.sub(posObject.worldTransform.position.z, planeTrackObj.worldTransform.position.z)*/
-
         blockPos.push(Npos)                              //calculate position of new block and add to positions array
-        //blockWT.push(sceneBlock.child('Cube').worldTransform.position)
         var matIndex = Math.floor(Random.random() * mats.length);
         blockMat.push(matIndex)
-
         // make a physics object for the block
         worldObjects.push({ sceneObject: sceneBlock, physicsObject: initBlock(Npos) });    //add it to world objects
-        changeMat(newestIndex + 1);     //make the new block selected
+        touchBlock(newestIndex + 1);     //make the new block selected
 
 
         //updatePhysicsObjects(1);      // update physics hitboxes for all blocks
@@ -391,6 +325,10 @@ function makeBlock() {      //makes a new block, adds it to world objects, etc
     }
 }
 
+
+/////////////////////////////
+////////BALL FUNCTIONS///////
+/////////////////////////////
 function initSphere(pos) {
     var sphereBody = new CANNON.Body({
         mass: 2, // kg
@@ -439,6 +377,12 @@ function fireSphere() {
     ballTimeout = Time.setTimeout(function () { sphere.hidden = true}, 1500);
 
 }
+
+
+////////////////////////////
+////////CAR FUNCTIONS///////
+////////////////////////////
+
 function initCar(carpos) {
     var carBody = new CANNON.Body({
         mass: 2, // kg
@@ -447,7 +391,11 @@ function initCar(carpos) {
     })
     return carBody;
 }
-
+function setupCarPos() {
+    var touchPos = Patches.getVectorValue('CarPosition');
+    car.transform.x = touchPos.x;
+    car.transform.y = touchPos.y
+}
 function setupCar() {
     carButton.material = selected_car_mat;
     carAnimation.hidden = false;
@@ -467,7 +415,7 @@ function setupCar() {
 }
 function fireCar() {
     canShootCar = false;
-    var carPos = new CANNON.Vec3(car.transform.x.lastValue, 0, car.transform.z.lastValue)
+    var carPos = new CANNON.Vec3(car.transform.x.lastValue, 470, car.transform.z.lastValue)
     //var spherePos = new CANNON.Vec3(sphere.transform.x.pinLastValue(), sphere.transform.y.pinLastValue(), sphere.transform.z.pinLastValue());
     var cannonCar = initCar(carPos);
     worldObjects.push({ sceneObject: car, physicsObject: cannonCar })
@@ -485,117 +433,9 @@ function fireCar() {
 
 
 
-function changeMat(bid) {
-    if (!gravity) {
-        /*Promise.all([
-            Materials.findFirst('Cube_mat'),
-            Materials.findFirst('SelectedBlock_mat'),
-        ]).then(function(results){*/
-        var block = blocks[bid - 1];
-        var blockMesh = block.child('Cube')
-        Patches.setPulseValue('eve', Reactive.once() )
-        //var nObj = blocks[bid-1].child('nullObject0')
-        if (numBlock == bid) {
-            numBlock = 0;
-
-            redButton.hidden = true;
-            blueButton.hidden = true;
-            greenButton.hidden = true;
-            yellowButton.hidden = true;
-            purpleButton.hidden = true;
-            orangeButton.hidden = true;
-            colorsPlane.hidden = true;
-            colorsBorder.hidden = true;
-
-
-            //block.material = results[0];
-            blockMesh.material = mats[blockMat[bid - 1]]
-            Patches.setScalarValue('numBlock', numBlock)
-
-            //block.worldTransform.position = nObj.worldTransform.position
-            //Diagnostics.watch("SHIT: ", block.worldTransform.position.x.pinLastValue())
-            block.transform.x = block.transform.x.pinLastValue()
-            block.transform.y = block.transform.y.pinLastValue()
-            block.transform.z = block.transform.z.pinLastValue()
-            //updatePhysicsObjects();
-
-        }
-        else {
-            Patches.setPulseValue('select', Reactive.once())
-            if (numBlock != 0) {
-                blocks[numBlock - 1].child("Cube").material = mats[blockMat[numBlock - 1]];
-                blocks[numBlock - 1].transform.x = blocks[numBlock - 1].transform.x.pinLastValue()
-                blocks[numBlock - 1].transform.y = blocks[numBlock - 1].transform.y.pinLastValue()
-                blocks[numBlock - 1].transform.z = blocks[numBlock - 1].transform.z.pinLastValue()
-            }
-            redButton.hidden = false;
-            blueButton.hidden = false;
-            greenButton.hidden = false;
-            yellowButton.hidden = false;
-            purpleButton.hidden = false;
-            orangeButton.hidden = false;
-            colorsPlane.hidden = false;
-            colorsBorder.hidden = false;
-
-
-            block.worldTransform.position = blockPosObj.worldTransform.position
-            //block.transform.x = Reactive.sub(blockPosObj.worldTransform.position.x, planeTrackObj.worldTransform.position.x)
-            //block.transform.y = Reactive.sub(blockPosObj.worldTransform.position.y, planeTrackObj.worldTransform.position.y)
-            //block.transform.z = Reactive.sub(blockPosObj.worldTransform.position.z, planeTrackObj.worldTransform.position.z)
-            /*Diagnostics.watch("X: ",block.transform.x)
-            Diagnostics.watch("Y: ",block.transform.y)
-            Diagnostics.watch("Z: ",block.transform.z)
-            Diagnostics.watch("wX: ",block.worldTransform.x)
-            Diagnostics.watch("wY: ",block.worldTransform.y)
-            Diagnostics.watch("wZ: ",block.worldTransform.z)*/
-
-
-            numBlock = bid;
-            blockMesh.material = selectedMats[blockMat[bid - 1]];
-            Patches.setScalarValue('numBlock', numBlock)
-        }
-        //})
-    }
-}
-var NewXPos;
-var NewYPos;
-var NewZPos;
-var yRot = deviceWorldTransform.rotationY;
-
-/*function moveBlock(bid) {
-    for (var i = 0; i < blocks.length; i++) {
-        if (i == bid) {
-            var block = blocks[i];
-            const blockTransform = block.transform;
-
-            var touchPos = Patches.getVectorValue('patchPosition' + (i + 1));
-            //blockPos[bid] = new CANNON.Vec3(blockTransform.x.lastValue,blockTransform.y.lastValue,blockTransform.z.lastValuee)
-
-            // Get the angle of the camera                                                         |
-            // Try subtracting touch pos by a stored lastValue of touch pos in this version \/
-            var NewXPos = Reactive.add(newBlockPosX, Reactive.mul(Reactive.cos(yRot.lastValue), touchPos.x));
-            var NewYPos = Reactive.add(newBlockPosY, Reactive.mul(touchPos.y, -1));
-            var NewZPos = Reactive.add(newBlockPosZ, Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)), touchPos.x));
-
-
-            var NewXPos = Reactive.mul(Reactive.cos(yRot.lastValue),touchPos.x);
-            var NewYPos = Reactive.mul(touchPos.y,-1);
-            var NewZPos = Reactive.mul(Reactive.sin(Reactive.mul(yRot.lastValue, -1)),touchPos.x);
-
-            blockTransform.x = NewXPos;
-            blockTransform.y = NewYPos;
-            blockTransform.z = NewZPos;
-
-
-            updatePhysicsObjects();
-
-            //worldObjects[bid+1].physicsObject = initBlock(new CANNON.Vec3(NewXPos,NewYPos,NewZPos))
-        }
-    }
-}*/
-
-
-
+/////////////////////////////
+////////TOUCH GESTURES///////
+/////////////////////////////
 
 TouchGestures.onPan().subscribe(function (gesture) {
     //moveBlock(numBlock- 1);
@@ -609,12 +449,11 @@ TouchGestures.onTap(blockButton).subscribe(function (gesture) {
         //updatePhysicsObjects();
     }
 });
-
 TouchGestures.onTap(gravityButton).subscribe(function (e) {
 
     if (!gravitySignal) {
         if (numBlock != 0)
-            changeMat(numBlock)
+            touchBlock(numBlock)
         ballButton.hidden = false;
         carButton.hidden = false;
         gravPlane.hidden = false;
@@ -787,54 +626,54 @@ TouchGestures.onTap(orangeButton).subscribe(function (gesture) {
 for(var i = 0; i < blocks.length; i++){
   //var block = blocks[i];
   TouchGestures.onTap(blocks[i]).subscribe(function (gesture) {
-          changeMat(i+1);
+          touchBlock(i+1);
   });
 }
 */
 TouchGestures.onTap(blocks[0]).subscribe(function (gesture) {
-    changeMat(1);
+    touchBlock(1);
 });
 TouchGestures.onTap(blocks[1]).subscribe(function (gesture) {
-    changeMat(2);
+    touchBlock(2);
 });
 TouchGestures.onTap(blocks[2]).subscribe(function (gesture) {
-    changeMat(3);
+    touchBlock(3);
 });
 TouchGestures.onTap(blocks[3]).subscribe(function (gesture) {
-    changeMat(4);
+    touchBlock(4);
 });
 TouchGestures.onTap(blocks[4]).subscribe(function (gesture) {
-    changeMat(5);
+    touchBlock(5);
 });
 TouchGestures.onTap(blocks[5]).subscribe(function (gesture) {
-    changeMat(6);
+    touchBlock(6);
 });
 TouchGestures.onTap(blocks[6]).subscribe(function (gesture) {
-    changeMat(7);
+    touchBlock(7);
 });
 TouchGestures.onTap(blocks[7]).subscribe(function (gesture) {
-    changeMat(8);
+    touchBlock(8);
 });
 TouchGestures.onTap(blocks[8]).subscribe(function (gesture) {
-    changeMat(9);
+    touchBlock(9);
 });
 TouchGestures.onTap(blocks[9]).subscribe(function (gesture) {
-    changeMat(10);
+    touchBlock(10);
 });
 TouchGestures.onTap(blocks[10]).subscribe(function (gesture) {
-    changeMat(11);
+    touchBlock(11);
 });
 TouchGestures.onTap(blocks[11]).subscribe(function (gesture) {
-    changeMat(12);
+    touchBlock(12);
 });
 TouchGestures.onTap(blocks[12]).subscribe(function (gesture) {
-    changeMat(13);
+    touchBlock(13);
 });
 TouchGestures.onTap(blocks[13]).subscribe(function (gesture) {
-    changeMat(14);
+    touchBlock(14);
 });
 TouchGestures.onTap(blocks[14]).subscribe(function (gesture) {
-    changeMat(15);
+    touchBlock(15);
 });
 
 
