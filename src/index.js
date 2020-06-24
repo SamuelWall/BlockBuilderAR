@@ -418,7 +418,7 @@ function setupCarPos() {
     /////////////////
     var touchPos = Patches.getVectorValue('CarPosition');
     car.transform.x = touchPos.x;
-    car.transform.y = touchPos.y
+    car.transform.z = touchPos.y
 }
 
 function setupCar() {
@@ -566,8 +566,7 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
 
     var carinst = true
     Patches.setBooleanValue('carinst', carinst)
-    Patches.setPulseValue('carnoise', Reactive.once())
-
+  
     carButton.material = selected_car_mat;  //Change the car button to clicked
     ballButton.material = ball_mat; //Change the ball button to unclicked
 
@@ -585,6 +584,8 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
 
     if (gravity && !canShootCar) { //Set up the car if it hasn't been yet
         setupCar();
+        Patches.setPulseValue('carnoise', Reactive.once())
+
     }
     else if (canShootCar) {  //Remove the car if clicked again
         canShootCar = false;
@@ -597,8 +598,10 @@ TouchGestures.onTap().subscribe(function (gesture) {
     ////TAP ON THE SCREEN
     /////////////////////
 
-    if (canShootSphere)
+    if (canShootSphere) {
         fireSphere();  //Fire the ball
+        Patches.setPulseValue('wooshtrig', Reactive.once())
+    }
     else if (sphereIndex != -1) {
         setupSphere();  //If the ball exists already reset it
         Patches.setPulseValue('reload', Reactive.once()) //Play the sound
