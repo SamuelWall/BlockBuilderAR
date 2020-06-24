@@ -568,28 +568,25 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
     Patches.setBooleanValue('carinst', carinst)
     Patches.setPulseValue('carnoise', Reactive.once())
 
-    carButton.material = selected_car_mat;
-    sphere.hidden = true;
-    carAnimation.hidden = true;
-    canShootSphere = false;
-    ballButton.material = ball_mat;
+    carButton.material = selected_car_mat;  //Change the car button to clicked
+    ballButton.material = ball_mat; //Change the ball button to unclicked
 
-    if (sphereIndex != -1) {
+    sphere.hidden = true;        //Hide the ball
+    carAnimation.hidden = true;  //Hide the car in case its already shown
+    canShootSphere = false;    //Disable the ball
+
+
+    if (sphereIndex != -1) {   //If the ball exists remove it
         worldObjects.splice(sphereIndex, 1)
         sphereIndex = -1;
         //sphere.hidden = true;
-        setupSphereRot();
-        canShootSphere = false;
-
+        setupSphereRot();   //Bring it back in case it's been shot
     }
 
-    if (gravity && !canShootCar) {
+    if (gravity && !canShootCar) { //Set up the car if it hasn't been yet
         setupCar();
-        //var touchPos = Patches.getVectorValue('CarPosition');
-        //carAnim.transform.x = touchPos.x
-        //carAnim.transform.z = touchPos.y
     }
-    else if (canShootCar) {
+    else if (canShootCar) {  //Remove the car if clicked again
         canShootCar = false;
         carAnimation.hidden = true;
         carButton.material = car_mat;
