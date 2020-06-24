@@ -14,6 +14,6 @@ BlockBuilder AR allows you to build towers with colorful building blocks, utiliz
 
 
 ## Future plans
--[] Implement real time buidling with friends
--[] New destruction objects
--[] Documentation 
+-[ ] Implement real time buidling with friends
+-[ ] New destruction objects
+-[ ] Documentation 
