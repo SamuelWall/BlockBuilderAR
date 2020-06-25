@@ -1,4 +1,4 @@
-# Build and Destroy
+# Block Builder AR
 
 An augmented reality building block game
 BlockBuilder AR allows you to build towers with colorful building blocks, utilizing object physics to bring the creations to life. You can add blocks and change their colors. Grab and move them around by moving your device. When you're done with your creation, switch on gravity and watch it fall into place. BlockBuilder features two destruction objects: a ball to throw at your tower from different angles, or a car that races toward your tower for a more dramatic destruction.
