@@ -26,8 +26,8 @@ const fd = Scene.root
     .child('Device')
     .child('Camera')
     .child('Focal Distance')
-const canvas = fd.child('canvas0')
 const planeTracker = root.child('planeTracker0')
+const panel = planeTracker.child('panel')
 const camera = root.child('Device').child('Camera');
 const posObject = camera.child('positionObject')
 const blockPosObj = camera.child('blockPositionObject')
@@ -42,24 +42,24 @@ var camRotY = deviceWorldTransform.rotationY;
 var camRotZ = deviceWorldTransform.rotationZ;
 
 
-const blockButton = canvas.child('blockButton');    //Buttons
-const gravityButton = canvas.child('gravityButton');
-const resetButton = canvas.child('resetButton');
-const ballButton = canvas.child('ballButton');
-const redButton = canvas.child('redButton')
-const blueButton = canvas.child('blueButton')
-const greenButton = canvas.child('greenButton')
-const yellowButton = canvas.child('yellowButton')
-const purpleButton = canvas.child('purpleButton')
-const orangeButton = canvas.child('orangeButton')
-const carButton = canvas.child('carButton');
+const blockButton = panel.child('blockButton');    //Buttons
+const gravityButton = panel.child('gravityButton');
+const resetButton = panel.child('resetButton');
+const ballButton = panel.child('ballButton');
+const redButton = panel.child('redButton')
+const blueButton = panel.child('blueButton')
+const greenButton = panel.child('greenButton')
+const yellowButton = panel.child('yellowButton')
+const purpleButton = panel.child('purpleButton')
+const orangeButton = panel.child('orangeButton')
+const carButton = panel.child('carButton');
 
-const buttonsPlane = canvas.child('buttonsPlane')   //Button containers
-const buttonsBorder = canvas.child('buttonsBorder')
-const colorsPlane = canvas.child('colorsPlane')
-const colorsBorder = canvas.child('colorsBorder')
-const gravPlane = canvas.child('gravPlane')
-const gravBorder = canvas.child('gravBorder')
+const buttonsPlane = panel.child('buttonsPlane')   //Button containers
+const buttonsBorder = panel.child('buttonsBorder')
+const colorsPlane = panel.child('colorsPlane')
+const colorsBorder = panel.child('colorsBorder')
+const gravPlane = panel.child('gravPlane')
+const gravBorder = panel.child('gravBorder')
 
 const sphere = planeTracker.child('Sphere')
 const car = planeTracker.child("car");   //Destruction objects
@@ -566,7 +566,7 @@ TouchGestures.onTap(carButton).subscribe(function (gesture) {
 
     var carinst = true
     Patches.setBooleanValue('carinst', carinst)
-  
+
     carButton.material = selected_car_mat;  //Change the car button to clicked
     ballButton.material = ball_mat; //Change the ball button to unclicked
 
