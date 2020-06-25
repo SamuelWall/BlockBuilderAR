@@ -617,6 +617,7 @@ TouchGestures.onTap().subscribe(function (gesture) {
 
 ////TAP ON THE COLOR BUTTONS
 ////////////////////////////
+
 TouchGestures.onTap(redButton).subscribe(function (gesture) {
     if (numBlock != 0) {
         blockMat[numBlock - 1] = 0;  //Change the saved mat for that block
@@ -626,46 +627,47 @@ TouchGestures.onTap(redButton).subscribe(function (gesture) {
     }
 
 });
-TouchGestures.onTap(blueButton).subscribe(function (gesture) {
+TouchGestures.onTap(orangeButton).subscribe(function (gesture) {
     if (numBlock != 0) {
         blockMat[numBlock - 1] = 1;
         blocks[numBlock - 1].child('Cube').material = selectedMats[1];
-        blueButton.material = selected_blue_mat;
-        Time.setTimeout(function () { blueButton.material = blue_mat }, 125);
-    }
-});
-TouchGestures.onTap(greenButton).subscribe(function (gesture) {
-    if (numBlock != 0) {
-        blockMat[numBlock - 1] = 2;
-        blocks[numBlock - 1].child('Cube').material = selectedMats[2];
-        greenButton.material = selected_green_mat;
-        Time.setTimeout(function () { greenButton.material = green_mat }, 125);
-    }
-});
-TouchGestures.onTap(yellowButton).subscribe(function (gesture) {
-    if (numBlock != 0) {
-        blockMat[numBlock - 1] = 3;
-        blocks[numBlock - 1].child('Cube').material = selectedMats[3];
-        yellowButton.material = selected_yellow_mat;
-        Time.setTimeout(function () { yellowButton.material = yellow_mat }, 125);
-    }
-});
-TouchGestures.onTap(purpleButton).subscribe(function (gesture) {
-    if (numBlock != 0) {
-        blockMat[numBlock - 1] = 4;
-        blocks[numBlock - 1].child('Cube').material = selectedMats[4];
-        purpleButton.material = selected_purple_mat;
-        Time.setTimeout(function () { purpleButton.material = purple_mat }, 125);
-    }
-});
-TouchGestures.onTap(orangeButton).subscribe(function (gesture) {
-    if (numBlock != 0) {
-        blockMat[numBlock - 1] = 5;
-        blocks[numBlock - 1].child('Cube').material = selectedMats[5];
         orangeButton.material = selected_orange_mat;
         Time.setTimeout(function () { orangeButton.material = orange_mat }, 125);
     }
 });
+TouchGestures.onTap(yellowButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 2;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[2];
+        yellowButton.material = selected_yellow_mat;
+        Time.setTimeout(function () { yellowButton.material = yellow_mat }, 125);
+    }
+});
+TouchGestures.onTap(greenButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 3;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[3];
+        greenButton.material = selected_green_mat;
+        Time.setTimeout(function () { greenButton.material = green_mat }, 125);
+    }
+});
+TouchGestures.onTap(blueButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 4;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[4];
+        blueButton.material = selected_blue_mat;
+        Time.setTimeout(function () { blueButton.material = blue_mat }, 125);
+    }
+});
+TouchGestures.onTap(purpleButton).subscribe(function (gesture) {
+    if (numBlock != 0) {
+        blockMat[numBlock - 1] = 5;
+        blocks[numBlock - 1].child('Cube').material = selectedMats[5];
+        purpleButton.material = selected_purple_mat;
+        Time.setTimeout(function () { purpleButton.material = purple_mat }, 125);
+    }
+});
+
 /*
 for(var i = 0; i < blocks.length; i++){
   //var block = blocks[i];
