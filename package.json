@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "cannon": "github:schteppe/cannon.js",
-    "npm": "^6.14.5",
+    "npm": "^6.14.6",
     "spark-ar-physics": "^1.0.1",
     "webpack": "^4.31.0"
   }
